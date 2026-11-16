@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AMFC Expense" />
+  <title>Prepared_by_Bunhav_Expense_doc (iOS)</title>
+  <style>
+    :root {
+      --ios-bg: #F2F2F7;
+      --ios-card: #FFFFFF;
+      --ios-blue: #007AFF;
+      --ios-green: #34C759;
+      --ios-red: #FF3B30;
+      --ios-gray: #8E8E93;
+      --ios-border: #E5E5EA;
+      --ios-text: #1C1C1E;
+      --safe-top: env(safe-area-inset-top, 12px);
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: calc(var(--safe-top) + 8px) 14px calc(var(--safe-bottom) + 85px);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Khmer OS Battambang", sans-serif;
+      background-color: var(--ios-bg);
+      color: var(--ios-text);
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    /* Top iOS Navigation Header */
+    .ios-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .ios-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ios-green);
+      background: rgba(52, 199, 89, 0.14);
+      padding: 4px 10px;
+      border-radius: 999px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .status-pill.show {
+      opacity: 1;
+    }
+
+    /* Utility Pill Bar */
+    .utility-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .utility-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-btn {
+      flex: 0 0 auto;
+      background: var(--ios-card);
+      border: 1px solid var(--ios-border);
+      color: var(--ios-blue);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .chip-btn:active {
+      background: #E5E5EA;
+    }
+
+    /* iOS Grouped Cards */
+    .ios-card {
+      background: var(--ios-card);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ios-gray);
+      text-transform: uppercase;
+      margin: 0 0 8px 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-group.full {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #3A3A3C;
+    }
+
+    input, select {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      font-size: 16px;
+      border: 1px solid var(--ios-border);
+      border-radius: 10px;
+      background: #FAFAFC;
+      color: var(--ios-text);
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--ios-blue);
+      background: #FFFFFF;
+    }
+
+    /* Expense Row Cards */
+    .expense-item {
+      background: var(--ios-card);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--ios-border);
+    }
+
+    .expense-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--ios-border);
+    }
+
+    .row-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ios-blue);
+    }
+
+    .delete-btn {
+      background: rgba(255, 59, 48, 0.12);
+      color: var(--ios-red);
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .equiv-display {
+      background: #F2F2F7;
+      border-radius: 10px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .add-row-btn {
+      width: 100%;
+      height: 46px;
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--ios-blue);
+      border: 1.5px dashed var(--ios-blue);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    /* Summary Rows */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--ios-border);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-row input {
+      width: 150px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .total-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ios-blue);
+    }
+
+    .rem-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ios-green);
+    }
+
+    /* Touch Signature Pads */
+    .sig-box {
+      margin-bottom: 12px;
+    }
+
+    .sig-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    canvas.sig-pad {
+      width: 100%;
+      height: 130px;
+      background: #FAFAFC;
+      border: 1px solid var(--ios-border);
+      border-radius: 12px;
+      touch-action: none;
+      display: block;
+    }
+
+    /* Fixed Bottom iOS Tab Action Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--ios-border);
+      padding: 10px 14px calc(var(--safe-bottom) + 6px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    .btn-primary {
+      background: var(--ios-blue);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      height: 44px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      background: #E5E5EA;
+      color: var(--ios-text);
+      border: none;
+      border-radius: 12px;
+      height: 44px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* iOS Modal Sheet for History */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 200;
+      align-items: flex-end;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: var(--ios-bg);
+      width: 100%;
+      max-height: 82vh;
+      border-radius: 20px 20px 0 0;
+      padding: 16px 16px calc(var(--safe-bottom) + 16px);
+      overflow-y: auto;
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-card {
+      background: var(--ios-card);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Clean A4 Voucher Print Layout for iOS AirPrint / Save as PDF */
+    @media print {
+      body {
+        background: #FFFFFF;
+        padding: 0;
+        font-size: 12px;
+      }
+      .utility-scroll, .bottom-bar, .add-row-btn, .delete-btn, .status-pill, .modal-backdrop {
+        display: none !important;
+      }
+      .ios-card, .expense-item {
+        box-shadow: none;
+        border: 1px solid #CCCCCC;
+        break-inside: avoid;
+      }
+      input, select {
+        border: none;
+        background: transparent;
+        padding: 0;
+        height: auto;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ios-header">
+    <h1>តារាងបញ្ជីប្រចាំថ្ងៃ</h1>
+    <span id="saveStatus" class="status-pill">បានរក្សាទុករួចរាល់!</span>
+  </div>
+
+  <!-- Secondary Actions -->
+  <div class="utility-scroll">
+    <button class="chip-btn" onclick="resetForm()">+ បង្កើតថ្មី (New)</button>
+    <button class="chip-btn" onclick="openHistory()">ប្រវត្តិ (History)</button>
+    <button class="chip-btn" onclick="exportCSV()">Export CSV</button>
+    <button class="chip-btn" onclick="backupJSON()">Backup JSON</button>
+    <button class="chip-btn" onclick="document.getElementById('importFile').click()">Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+  </div>
+
+  <!-- Voucher Info -->
+  <div class="section-title">ព័ត៌មានទូទៅ (Voucher Info)</div>
+  <div class="ios-card">
+    <div class="form-grid">
+      <div class="field-group">
+        <label>ក្រុមហ៊ុន (Company)</label>
+        <input type="text" id="company" value="AMFC" />
+      </div>
+      <div class="field-group">
+        <label>លេខប័ណ្ណ (Voucher)</label>
+        <input type="text" id="voucher" placeholder="VCH-001" />
+      </div>
+      <div class="field-group">
+        <label>ថ្ងៃទី (Date)</label>
+        <input type="date" id="docDate" />
+      </div>
+      <div class="field-group">
+        <label>អត្រាប្តូរប្រាក់ (1$ ៛)</label>
+        <input type="number" id="exchangeRate" value="4000" inputmode="numeric" oninput="recalculate()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Expense Items -->
+  <div class="section-title">មុខចំណាយ (Expenses)</div>
+  <div id="expenseList"></div>
+  <button class="add-row-btn" onclick="addRow()">+ បន្ថែមជួរចំណាយ</button>
+
+  <!-- Totals & Balances -->
+  <div class="section-title">សរុបទឹកប្រាក់ (Summary)</div>
+  <div class="ios-card">
+    <div class="summary-row">
+      <label>លុយធនាគារ (ABA) (៛)</label>
+      <input type="number" id="abaAmount" value="0" inputmode="decimal" oninput="recalculate()" />
+    </div>
+    <div class="summary-row">
+      <label>សាច់ប្រាក់ (Cash) (៛)</label>
+      <input type="number" id="cashAmount" value="0" inputmode="decimal" oninput="recalculate()" />
+    </div>
+    <div class="summary-row">
+      <label>ចំណាយសរុប (Total)</label>
+      <span class="total-val" id="totalExpense">0 ៛</span>
+    </div>
+    <div class="summary-row">
+      <label>នៅសល់ (Remaining)</label>
+      <span class="rem-val" id="remainingBalance">0 ៛</span>
+    </div>
+  </div>
+
+  <!-- Touch Signatures -->
+  <div class="section-title">ហត្ថលេខា (Signatures)</div>
+  <div class="ios-card">
+    <div class="sig-box">
+      <div class="sig-header">
+        <label>អ្នកធ្វើបញ្ជី (Prepared By)</label>
+        <button class="delete-btn" onclick="clearCanvas('sigPrep')">លុបហត្ថលេខា</button>
+      </div>
+      <canvas id="sigPrep" class="sig-pad"></canvas>
+    </div>
+    <div class="sig-box" style="margin-bottom:0">
+      <div class="sig-header">
+        <label>អ្នកត្រួតពិនិត្យ / អនុម័ត (Approved By)</label>
+        <button class="delete-btn" onclick="clearCanvas('sigApp')">លុបហត្ថលេខា</button>
+      </div>
+      <canvas id="sigApp" class="sig-pad"></canvas>
+    </div>
+  </div>
+
+  <!-- Bottom Fixed iOS Action Bar -->
+  <div class="bottom-bar">
+    <button class="btn-secondary" onclick="saveDocument()">រក្សាទុក (Save)</button>
+    <button class="btn-secondary" onclick="openHistory()">ប្រវត្តិ (History)</button>
+    <button class="btn-primary" onclick="window.print()">Create PDF / Print</button>
+  </div>
+
+  <!-- History Modal Sheet -->
+  <div id="historyModal" class="modal-backdrop" onclick="closeHistory()">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <h3 style="margin:0">ប្រវត្តិបញ្ជីចំណាយ (History)</h3>
+        <button class="chip-btn" onclick="closeHistory()">Close</button>
+      </div>
+      <div id="historyItems"></div>
+    </div>
+  </div>
+
+  <script>
+    let rows = [];
+    const STORAGE_KEY = 'amfc_ios_expenses_v1';
+
+    function init() {
+      document.getElementById('docDate').valueAsDate = new Date();
+      setupCanvas('sigPrep');
+      setupCanvas('sigApp');
+      addRow();
+    }
+
+    function addRow(data = { category: '', desc: '', currency: 'KHR', amount: '' }) {
+      rows.push(data);
+      renderRows();
+    }
+
+    function removeRow(index) {
+      rows.splice(index, 1);
+      if (rows.length === 0) addRow();
+      else renderRows();
+    }
+
+    function renderRows() {
+      const container = document.getElementById('expenseList');
+      container.innerHTML = '';
+      rows.forEach((row, idx) => {
+        const card = document.createElement('div');
+        card.className = 'expense-item';
+        card.innerHTML = `
+          <div class="expense-item-header">
+            <span class="row-badge">ល.រ #${idx + 1}</span>
+            <button class="delete-btn" onclick="removeRow(${idx})">លុប</button>
+          </div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>ប្រភេទ (Category)</label>
+              <input type="text" value="${row.category}" placeholder="ឧ. សាំង, អាហារ..." onchange="updateRow(${idx}, 'category', this.value)" />
+            </div>
+            <div class="field-group">
+              <label>រូបិយប័ណ្ណ</label>
+              <select onchange="updateRow(${idx}, 'currency', this.value)">
+                <option value="KHR" ${row.currency === 'KHR' ? 'selected' : ''}>រៀល (៛)</option>
+                <option value="USD" ${row.currency === 'USD' ? 'selected' : ''}>ដុល្លារ ($)</option>
+              </select>
+            </div>
+            <div class="field-group full">
+              <label>បរិយាយ (មុខចំណាយ)</label>
+              <input type="text" value="${row.desc}" placeholder="បញ្ចូលការបរិយាយ..." onchange="updateRow(${idx}, 'desc', this.value)" />
+            </div>
+            <div class="field-group">
+              <label>ចំនួនទឹកប្រាក់</label>
+              <input type="number" inputmode="decimal" value="${row.amount}" placeholder="0" oninput="updateRow(${idx}, 'amount', this.value)" />
+            </div>
+            <div class="field-group">
+              <label>សមមូល (៛)</label>
+              <div class="equiv-display" id="eq-${idx}">0 ៛</div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      recalculate();
+    }
+
+    function updateRow(idx, key, val) {
+      rows[idx][key] = val;
+      recalculate();
+    }
+
+    function recalculate() {
+      const rate = parseFloat(document.getElementById('exchangeRate').value) || 4000;
+      let totalKHR = 0;
+
+      rows.forEach((row, idx) => {
+        const amt = parseFloat(row.amount) || 0;
+        const eq = row.currency === 'USD' ? amt * rate : amt;
+        totalKHR += eq;
+        const eqEl = document.getElementById(`eq-${idx}`);
+        if (eqEl) eqEl.textContent = eq.toLocaleString() + ' ៛';
+      });
+
+      const aba = parseFloat(document.getElementById('abaAmount').value) || 0;
+      const cash = parseFloat(document.getElementById('cashAmount').value) || 0;
+      const remaining = (aba + cash) - totalKHR;
+
+      document.getElementById('totalExpense').textContent = totalKHR.toLocaleString() + ' ៛';
+      const remEl = document.getElementById('remainingBalance');
+      remEl.textContent = remaining.toLocaleString() + ' ៛';
+      remEl.style.color = remaining < 0 ? 'var(--ios-red)' : 'var(--ios-green)';
+    }
+
+    function setupCanvas(id) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = (rect.width || 320) * dpr;
+      canvas.height = 130 * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#1C1C1E';
+
+      let drawing = false;
+      const getPos = (e) => {
+        const r = canvas.getBoundingClientRect();
+        const touch = e.touches ? e.touches[0] : e;
+        return { x: touch.clientX - r.left, y: touch.clientY - r.top };
+      };
+
+      const start = (e) => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+      const move = (e) => { if (!drawing) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+      const end = () => { drawing = false; };
+
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      canvas.addEventListener('touchend', end);
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      canvas.addEventListener('mouseup', end);
+    }
+
+    function clearCanvas(id) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function showSavedToast() {
+      const pill = document.getElementById('saveStatus');
+      pill.classList.add('show');
+      setTimeout(() => pill.classList.remove('show'), 2200);
+    }
+
+    function getDocData() {
+      return {
+        id: Date.now(),
+        company: document.getElementById('company').value,
+        voucher: document.getElementById('voucher').value || 'No-Voucher',
+        date: document.getElementById('docDate').value,
+        rate: document.getElementById('exchangeRate').value,
+        aba: document.getElementById('abaAmount').value,
+        cash: document.getElementById('cashAmount').value,
+        total: document.getElementById('totalExpense').textContent,
+        rows: rows
+      };
+    }
+
+    function saveDocument() {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      history.unshift(getDocData());
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      showSavedToast();
+    }
+
+    function resetForm() {
+      document.getElementById('voucher').value = '';
+      document.getElementById('abaAmount').value = '0';
+      document.getElementById('cashAmount').value = '0';
+      clearCanvas('sigPrep');
+      clearCanvas('sigApp');
+      rows = [];
+      addRow();
+    }
+
+    function openHistory() {
+      const list = document.getElementById('historyItems');
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      list.innerHTML = history.length ? '' : '<p style="color:#8E8E93">មិនទាន់មានប្រវត្តិរក្សាទុកទេ។</p>';
+      history.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'history-card';
+        div.innerHTML = `
+          <div>
+            <strong>${item.voucher}</strong> (${item.date || 'N/A'})<br/>
+            <span style="font-size:13px;color:#007AFF">${item.total}</span>
+          </div>
+          <button class="chip-btn" onclick="loadDoc(${idx})">បើក (Load)</button>
+        `;
+        list.appendChild(div);
+      });
+      document.getElementById('historyModal').classList.add('open');
+    }
+
+    function closeHistory() {
+      document.getElementById('historyModal').classList.remove('open');
+    }
+
+    function loadDoc(idx) {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const item = history[idx];
+      if (!item) return;
+      document.getElementById('company').value = item.company;
+      document.getElementById('voucher').value = item.voucher;
+      document.getElementById('docDate').value = item.date;
+      document.getElementById('exchangeRate').value = item.rate;
+      document.getElementById('abaAmount').value = item.aba;
+      document.getElementById('cashAmount').value = item.cash;
+      rows = item.rows || [];
+      renderRows();
+      closeHistory();
+    }
+
+    function exportCSV() {
+      let csv = 'No,Category,Description,Currency,Amount\n';
+      rows.forEach((r, i) => {
+        csv += `${i + 1},"${r.category}","${r.desc}",${r.currency},${r.amount || 0}\n`;
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `AMFC_Expense_${document.getElementById('docDate').value || 'export'}.csv`;
+      a.click();
+    }
+
+    function backupJSON() {
+      const data = localStorage.getItem(STORAGE_KEY) || '[]';
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'AMFC_Expense_Backup.json';
+      a.click();
+    }
+
+    function importJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        localStorage.setItem(STORAGE_KEY, ev.target.result);
+        showSavedToast();
+      };
+      reader.readAsText(file);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
