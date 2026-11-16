@@ -4,708 +4,2767 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="AMFC Expense" />
-  <title>Prepared_by_Bunhav_Expense_doc (iOS)</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>AMFC Daily Expense Report</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
-      --ios-bg: #F2F2F7;
-      --ios-card: #FFFFFF;
-      --ios-blue: #007AFF;
-      --ios-green: #34C759;
-      --ios-red: #FF3B30;
-      --ios-gray: #8E8E93;
-      --ios-border: #E5E5EA;
-      --ios-text: #1C1C1E;
-      --safe-top: env(safe-area-inset-top, 12px);
-      --safe-bottom: env(safe-area-inset-bottom, 16px);
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f172a;
+      --accent: #0d9488;
+      --accent-soft: #ccfbf1;
+      --danger: #dc2626;
+      --success: #059669;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(15,23,42,.08), 0 4px 12px rgba(15,23,42,.04);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Khmer OS", "Khmer UI", system-ui, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
     body {
-      margin: 0;
-      padding: calc(var(--safe-top) + 8px) 14px calc(var(--safe-bottom) + 85px);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Khmer OS Battambang", sans-serif;
-      background-color: var(--ios-bg);
-      color: var(--ios-text);
-      font-size: 16px;
-      line-height: 1.4;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+      overscroll-behavior: none;
+      padding-bottom: calc(72px + var(--safe-bottom));
     }
 
-    /* Top iOS Navigation Header */
-    .ios-header {
+    /* ===== TOP BAR ===== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--primary);
+      color: #fff;
+      padding: calc(10px + var(--safe-top)) 12px 12px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .ios-header h1 {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .status-pill {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ios-green);
-      background: rgba(52, 199, 89, 0.14);
-      padding: 4px 10px;
-      border-radius: 999px;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-
-    .status-pill.show {
-      opacity: 1;
-    }
-
-    /* Utility Pill Bar */
-    .utility-scroll {
-      display: flex;
       gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 8px;
-      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
     }
-
-    .utility-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip-btn {
-      flex: 0 0 auto;
-      background: var(--ios-card);
-      border: 1px solid var(--ios-border);
-      color: var(--ios-blue);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 14px;
+    .nav-toggle {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(255,255,255,.12);
       border-radius: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .nav-toggle svg { width: 20px; height: 20px; }
+    .topbar-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .top-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-top {
+      height: 36px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-save { background: #10b981; color: #fff; }
+    .btn-history { background: rgba(255,255,255,.15); color: #fff; }
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 9px;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
+    .btn-icon:active, .btn-top:active { opacity: .85; transform: scale(.97); }
 
-    .chip-btn:active {
-      background: #E5E5EA;
+    /* Side drawer */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.45);
+      z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed; top: 0; left: 0; bottom: 0; width: min(300px, 82vw);
+      background: #fff; z-index: 210;
+      transform: translateX(-100%); transition: transform .28s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      padding-top: var(--safe-top);
+      box-shadow: 8px 0 24px rgba(0,0,0,.12);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drawer-header h2 { font-size: 17px; font-weight: 700; }
+    .drawer-close {
+      width: 34px; height: 34px; border: none; background: #f1f5f9;
+      border-radius: 8px; font-size: 18px; cursor: pointer;
+    }
+    .drawer-nav { flex: 1; overflow-y: auto; padding: 10px 8px; }
+    .drawer-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      text-decoration: none; border: none; background: none;
+      width: 100%; text-align: left; cursor: pointer;
+    }
+    .drawer-item:hover, .drawer-item:active { background: #f1f5f9; }
+    .drawer-item svg { width: 20px; height: 20px; opacity: .75; flex-shrink: 0; }
+    .drawer-item .badge {
+      margin-left: auto; font-size: 11px; background: #e2e8f0;
+      padding: 2px 7px; border-radius: 20px; color: var(--muted);
     }
 
-    /* iOS Grouped Cards */
-    .ios-card {
-      background: var(--ios-card);
-      border-radius: 14px;
-      padding: 14px;
+    /* ===== MAIN ===== */
+    .main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 14px 14px 20px;
+    }
+
+    /* Header card */
+    .header-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
       margin-bottom: 14px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
     }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ios-gray);
-      text-transform: uppercase;
-      margin: 0 0 8px 4px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field-group.full {
-      grid-column: span 2;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #3A3A3C;
-    }
-
-    input, select {
-      width: 100%;
-      height: 42px;
-      padding: 0 12px;
-      font-size: 16px;
-      border: 1px solid var(--ios-border);
-      border-radius: 10px;
-      background: #FAFAFC;
-      color: var(--ios-text);
-      font-family: inherit;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--ios-blue);
-      background: #FFFFFF;
-    }
-
-    /* Expense Row Cards */
-    .expense-item {
-      background: var(--ios-card);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border: 1px solid var(--ios-border);
-    }
-
-    .expense-item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--ios-border);
-    }
-
-    .row-badge {
-      font-size: 13px;
+    .doc-title {
+      text-align: center;
+      font-size: 18px;
       font-weight: 700;
-      color: var(--ios-blue);
+      letter-spacing: -.02em;
+      margin-bottom: 4px;
+      color: var(--ink);
     }
-
-    .delete-btn {
-      background: rgba(255, 59, 48, 0.12);
-      color: var(--ios-red);
-      border: none;
-      border-radius: 8px;
-      padding: 5px 10px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .equiv-display {
-      background: #F2F2F7;
-      border-radius: 10px;
-      height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 12px;
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .add-row-btn {
-      width: 100%;
-      height: 46px;
-      background: rgba(0, 122, 255, 0.1);
-      color: var(--ios-blue);
-      border: 1.5px dashed var(--ios-blue);
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
+    .doc-subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
       margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
-
-    /* Summary Rows */
-    .summary-row {
+    .meta-row {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 20px;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--ios-border);
+      justify-content: space-between;
     }
-
-    .summary-row:last-child {
-      border-bottom: none;
+    .meta-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+    .meta-label { color: var(--muted); font-weight: 500; white-space: nowrap; }
+    .date-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px 5px 12px;
     }
-
-    .summary-row input {
-      width: 150px;
-      text-align: right;
+    .date-display {
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 92px;
     }
-
-    .total-val {
-      font-size: 18px;
+    .date-edit-btn {
+      width: 28px; height: 28px;
+      border: none; background: transparent;
+      border-radius: 6px; color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .date-edit-btn:hover { background: #e2e8f0; color: var(--ink); }
+    .date-input {
+      display: none;
+      border: none; background: transparent;
+      font: inherit; font-weight: 600;
+      width: 110px; outline: none;
+    }
+    .company-badge {
+      background: var(--primary);
+      color: #fff;
       font-weight: 700;
-      color: var(--ios-blue);
+      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 7px;
+      letter-spacing: .02em;
     }
 
-    .rem-val {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--ios-green);
+    /* Table card */
+    .table-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 14px;
     }
-
-    /* Touch Signature Pads */
-    .sig-box {
-      margin-bottom: 12px;
-    }
-
-    .sig-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    canvas.sig-pad {
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table {
       width: 100%;
-      height: 130px;
-      background: #FAFAFC;
-      border: 1px solid var(--ios-border);
-      border-radius: 12px;
-      touch-action: none;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 320px;
+      border: 1px solid #cbd5e1;
+    }
+    thead th {
+      background: #f1f5f9;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 12px;
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1.5px solid #94a3b8;
+      border-right: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    thead th:last-child { border-right: none; text-align: right; width: 120px; }
+    thead th:first-child { width: 48px; text-align: center; }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    tbody td:last-child { border-right: none; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(even) { background: #fafbfc; }
+    tbody td:first-child {
+      text-align: center;
+      color: var(--muted);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      background: #f8fafc;
+    }
+    .desc-input, .amt-input {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      font: inherit;
+      color: var(--ink);
+      padding: 6px 8px;
+      border-radius: 6px;
+      outline: none;
+    }
+    .desc-input:focus, .amt-input:focus {
+      border-color: var(--accent);
+      background: #f0fdfa;
+    }
+    .amt-input {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      width: 100%;
+      min-width: 90px;
+    }
+    .amt-display {
+      display: block;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: text;
+      min-height: 32px;
+      line-height: 1.4;
+    }
+    .amt-display:hover {
+      background: #f8fafc;
+    }
+    .amt-cell {
+      position: relative;
+      min-width: 110px;
+    }
+    .amt-cell .amt-input {
+      display: none;
+    }
+    .amt-cell.editing .amt-display {
+      display: none;
+    }
+    .amt-cell.editing .amt-input {
       display: block;
     }
-
-    /* Fixed Bottom iOS Tab Action Bar */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--ios-border);
-      padding: 10px 14px calc(var(--safe-bottom) + 6px);
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.3fr;
-      gap: 8px;
-      z-index: 100;
-    }
-
-    .btn-primary {
-      background: var(--ios-blue);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 12px;
-      height: 44px;
-      font-size: 15px;
+    .currency {
       font-weight: 600;
+      margin-left: 1px;
     }
-
-    .btn-secondary {
-      background: #E5E5EA;
-      color: var(--ios-text);
-      border: none;
-      border-radius: 12px;
-      height: 44px;
-      font-size: 15px;
-      font-weight: 600;
+    .row-actions {
+      display: flex; gap: 4px; justify-content: flex-end;
     }
-
-    /* iOS Modal Sheet for History */
-    .modal-backdrop {
+    .btn-row {
+      width: 28px; height: 28px;
+      border: none; background: #f1f5f9;
+      border-radius: 6px; color: var(--muted);
+      font-size: 14px; cursor: pointer;
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 200;
-      align-items: flex-end;
     }
+    tbody tr:hover .btn-row, tbody tr:focus-within .btn-row { display: flex; align-items: center; justify-content: center; }
+    .btn-row.del:hover { background: #fee2e2; color: var(--danger); }
 
-    .modal-backdrop.open {
-      display: flex;
+    .add-row-wrap {
+      padding: 12px 14px 14px;
+      border-top: 1px dashed var(--border);
     }
-
-    .modal-sheet {
-      background: var(--ios-bg);
+    .btn-add {
       width: 100%;
-      max-height: 82vh;
-      border-radius: 20px 20px 0 0;
-      padding: 16px 16px calc(var(--safe-bottom) + 16px);
-      overflow-y: auto;
+      height: 46px;
+      border: 1.5px dashed #94a3b8;
+      background: #f8fafc;
+      border-radius: 10px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-add:hover, .btn-add:active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #0f766e;
     }
 
-    .modal-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* Summary */
+    .summary-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .summary-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
       margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
     }
-
-    .history-card {
-      background: var(--ios-card);
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .sum-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 9px;
+      border: 1px solid #f1f5f9;
+    }
+    .sum-label { font-size: 13.5px; color: var(--muted); font-weight: 500; }
+    .sum-value {
+      font-size: 16px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .sum-value.total { color: var(--ink); }
+    .sum-value.bank { color: #0369a1; }
+    .sum-value.remain.positive { color: var(--success); }
+    .sum-value.remain.negative { color: var(--danger); }
+    .bank-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .bank-input {
+      width: 110px;
+      text-align: right;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 8px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 15px;
+      color: #0369a1;
+      outline: none;
+    }
+    .bank-input:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .bank-currency {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0369a1;
+      min-width: 14px;
     }
 
-    /* Clean A4 Voucher Print Layout for iOS AirPrint / Save as PDF */
+    /* Signature */
+    .sign-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .sign-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .sign-table th {
+      background: #f8fafc;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .sign-table th + th { border-left: 1px solid var(--border); }
+    .sign-table td {
+      height: 130px;
+      vertical-align: middle;
+      text-align: center;
+      position: relative;
+      border-top: none;
+    }
+    .sign-table td + td { border-left: 1px solid var(--border); }
+    .sign-placeholder {
+      color: #94a3b8;
+      font-size: 13px;
+      pointer-events: none;
+    }
+    .sign-preview {
+      max-width: 90%;
+      max-height: 100px;
+      object-fit: contain;
+      display: none;
+    }
+    .sign-actions {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px 14px;
+      border-top: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .file-btn-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .file-btn {
+      width: 100%;
+      height: 40px;
+      border: none;
+      background: #e2e8f0;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .file-btn:active { background: #cbd5e1; }
+    .file-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .file-status {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      text-align: center;
+      min-height: 14px;
+    }
+    .btn-clear-sign {
+      width: 40px; height: 40px;
+      border: none; background: #fee2e2;
+      border-radius: 20px; color: var(--danger);
+      font-size: 16px; cursor: pointer;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    /* Bottom bar */
+    .bottombar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 90;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      padding: 10px 14px calc(10px + var(--safe-bottom));
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 -4px 16px rgba(15,23,42,.06);
+    }
+    .btn-bottom {
+      height: 42px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-preview { background: var(--primary); color: #fff; }
+    .btn-pdf { background: #0f766e; color: #fff; }
+    .btn-print { background: #334155; color: #fff; }
+    .btn-help {
+      width: 42px; height: 42px;
+      margin-left: auto;
+      border-radius: 50%;
+      background: #fef3c7;
+      color: #b45309;
+      border: none;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-bottom:active, .btn-help:active { opacity: .88; transform: scale(.97); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.5);
+      z-index: 300; display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%; max-width: 360px;
+      max-height: 85vh;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,.2);
+      display: flex; flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .modal-close {
+      width: 32px; height: 32px; border: none; background: #f1f5f9;
+      border-radius: 8px; font-size: 18px; cursor: pointer;
+    }
+    .modal-body { padding: 16px 18px; overflow-y: auto; flex: 1; }
+    .modal-footer {
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+    .btn-modal {
+      height: 40px; padding: 0 16px; border: none; border-radius: 9px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .btn-modal.primary { background: var(--primary); color: #fff; }
+    .btn-modal.ghost { background: #f1f5f9; color: var(--ink); }
+
+    .help-list { list-style: none; }
+    .help-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13.5px;
+      display: flex; gap: 10px;
+    }
+    .help-list li:last-child { border-bottom: none; }
+    .help-num {
+      width: 22px; height: 22px; background: var(--primary); color: #fff;
+      border-radius: 50%; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .hist-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 10px; border-bottom: 1px solid #f1f5f9;
+      font-size: 14px; cursor: pointer; border-radius: 8px;
+    }
+    .hist-item:active, .hist-item:hover { background: #f8fafc; }
+    .hist-date { font-weight: 600; }
+    .hist-count {
+      background: var(--primary); color: #fff; font-size: 12px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; min-width: 28px; text-align: center;
+    }
+    .hist-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .hist-empty { text-align: center; color: var(--muted); padding: 24px 0; font-size: 14px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(80px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .25s;
+      z-index: 400;
+      white-space: nowrap;
+      max-width: 90vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===== PRINT / PREVIEW ===== */
+    .print-only { display: none; }
     @media print {
-      body {
-        background: #FFFFFF;
-        padding: 0;
-        font-size: 12px;
+      body { background: #fff; padding: 0; }
+      .topbar, .bottombar, .drawer, .drawer-overlay, .btn-add, .add-row-wrap,
+      .date-edit-btn, .btn-row, .file-btn-wrap, .btn-clear-sign,
+      .nav-toggle, .top-actions, .btn-help, .modal-overlay, .toast { display: none !important; }
+      .main { max-width: none; padding: 0; }
+      .header-card, .table-card, .summary-card, .sign-card {
+        box-shadow: none; border: 1px solid #000; break-inside: avoid;
       }
-      .utility-scroll, .bottom-bar, .add-row-btn, .delete-btn, .status-pill, .modal-backdrop {
-        display: none !important;
+      .date-wrap { border: none; background: transparent; padding: 0; }
+      .company-badge { background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      table, .sign-table { border: 1px solid #000; }
+      thead th, .sign-table th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      tbody td, .sign-table td { border-color: #999; }
+      .print-only { display: block; }
+      .no-print { display: none !important; }
+    }
+
+    /* Preview mode */
+    body.preview-mode .topbar,
+    body.preview-mode .bottombar,
+    body.preview-mode .drawer,
+    body.preview-mode .date-edit-btn,
+    body.preview-mode .btn-add,
+    body.preview-mode .add-row-wrap,
+    body.preview-mode .btn-row,
+    body.preview-mode .file-btn-wrap,
+    body.preview-mode .btn-clear-sign { display: none !important; }
+    body.preview-mode .main { padding-bottom: 20px; }
+    body.preview-mode .preview-exit {
+      position: fixed; top: 12px; right: 12px; z-index: 500;
+      background: var(--primary); color: #fff; border: none;
+      height: 40px; padding: 0 16px; border-radius: 10px;
+      font-weight: 600; font-size: 13px; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    /* Small screens polish */
+    @media (max-width: 380px) {
+      .doc-title { font-size: 16px; }
+      .btn-top span { display: none; }
+      .btn-top { padding: 0 10px; }
+      .sum-value { font-size: 15px; }
+    }
+
+    /* ===== AMFC CLEAN LAYOUT + THEME SYSTEM ===== */
+    :root {
+      --bg:#edf4fc; --card:#ffffff; --ink:#17345f; --muted:#657b98;
+      --border:#d9e5f4; --primary:#0755b8; --accent:#f28a18;
+      --accent-soft:#fff1df; --danger:#e3262e; --success:#087f5b;
+      --radius:16px; --shadow:0 5px 18px rgba(13,65,130,.10);
+      --number:#e3262e; --blue2:#1686e8; --table-head:#0755b8;
+      --table-text:#18345b; --table-row:#ffffff; --table-alt:#f7faff;
+      --sign-head:#0755b8; --sign-head-text:#ffffff;
+    }
+    body { background:var(--bg); color:var(--ink); }
+    .topbar {
+      background:linear-gradient(110deg,#06489f,#0878d4);
+      box-shadow:0 3px 14px rgba(5,55,120,.20);
+    }
+    .topbar-title { font-weight:800; letter-spacing:.025em; }
+    .theme-bar {
+      max-width:640px; margin:0 auto; padding:9px 14px 2px;
+      display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+      color:var(--muted); font-size:12px;
+    }
+    .theme-bar label {font-weight:700;color:var(--ink);}
+    .theme-bar select {
+      min-height:34px; border:1px solid var(--border); border-radius:9px;
+      padding:5px 28px 5px 10px; background:var(--card); color:var(--ink);
+      font:600 12px var(--font); outline:none; max-width:190px;
+    }
+    .theme-note {font-size:11px;opacity:.8;}
+    .header-card,.table-card,.summary-card,.sign-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:var(--radius); box-shadow:var(--shadow);
+    }
+    .company-badge {
+      background:linear-gradient(110deg,var(--primary),var(--blue2));
+      color:#fff; letter-spacing:.06em;
+    }
+    .table-scroll { overflow-x:auto; }
+    #expenseTable {
+      width:100%; min-width:0; table-layout:fixed;
+      border-collapse:collapse; border:1px solid var(--border);
+      color:var(--table-text); background:var(--table-row);
+    }
+    #expenseTable thead th {
+      background:var(--table-head); color:#fff; text-align:left;
+      border:1px solid rgba(255,255,255,.20);
+      padding:12px 10px; white-space:normal; line-height:1.35;
+    }
+    #expenseTable thead th:first-child {width:48px;text-align:center;}
+    #expenseTable thead th:nth-child(2) {width:auto;}
+    #expenseTable thead th:last-child {width:142px;text-align:right;}
+    #expenseTable tbody tr,
+    #expenseTable tbody tr:nth-child(even) {background:var(--table-row);}
+    #expenseTable tbody td {
+      color:var(--table-text); background:var(--table-row);
+      border:1px solid var(--border); padding:9px 9px;
+    }
+    #expenseTable tbody td:first-child {
+      width:48px; text-align:center; color:var(--muted);
+      background:var(--table-alt); font-weight:600;
+    }
+    #expenseTable tbody td:nth-child(2) {text-align:left;}
+    #expenseTable tbody td:last-child {text-align:right;}
+    .desc-input {
+      color:var(--table-text); text-align:left; min-width:0;
+      border:1px solid transparent; background:transparent;
+    }
+    .desc-input:focus {background:var(--accent-soft);border-color:var(--accent);}
+    .amt-cell {width:100%;min-width:0;max-width:100%;}
+    #expenseTable tbody td:last-child > div {
+      width:100%; justify-content:flex-end!important;
+    }
+    .amt-display {
+      width:100%; color:var(--number); font-weight:800;
+      text-align:right; font-variant-numeric:tabular-nums;
+      border:1px solid rgba(227,38,46,.20);
+      background:#fff; border-radius:8px;
+      box-shadow:inset 0 1px 2px rgba(20,50,90,.04),0 2px 5px rgba(227,38,46,.06);
+      padding:7px 9px;
+    }
+    .amt-display:hover {background:#fff5f5;border-color:rgba(227,38,46,.45);}
+    .amt-input {
+      width:100%; min-width:0; text-align:right;
+      color:var(--number)!important; font-weight:800;
+      background:#fff!important; border:1.5px solid var(--number)!important;
+      box-shadow:0 0 0 3px rgba(227,38,46,.10);
+      border-radius:8px;
+    }
+    .sum-row {
+      background:var(--table-alt); border:1px solid var(--border);
+      border-radius:10px; min-height:52px; gap:12px;
+      box-shadow:inset 0 1px 2px rgba(20,50,90,.025);
+    }
+    .sum-label {color:var(--muted);font-weight:600;line-height:1.35;}
+    .sum-value,.sum-value.total,.sum-value.bank,.sum-value.remain,
+    .sum-value.remain.positive,.sum-value.remain.negative {
+      color:var(--number); font-weight:800;
+      font-variant-numeric:tabular-nums; text-align:right;
+      white-space:nowrap; text-shadow:0 1px 1px rgba(227,38,46,.08);
+    }
+    .bank-wrap {flex:0 0 auto;}
+    .bank-input {
+      width:116px; color:var(--number)!important; font-weight:800;
+      text-align:right; background:#fff;
+      border:1.5px solid var(--number); border-radius:9px;
+      box-shadow:0 2px 7px rgba(227,38,46,.09);
+    }
+    .bank-input:focus {border-color:var(--number);box-shadow:0 0 0 4px rgba(227,38,46,.13);}
+    .bank-currency {color:var(--number);}
+    .sign-table {
+      width:100%; table-layout:fixed; border-collapse:collapse;
+      background:#fff; color:var(--table-text);
+    }
+    .sign-table th,.sign-table td {width:50%;box-sizing:border-box;}
+    .sign-table th {
+      background:var(--sign-head); color:var(--sign-head-text);
+      border:1px solid var(--border); text-align:center;
+      padding:12px 7px; line-height:1.35; vertical-align:middle;
+    }
+    .sign-table td {
+      height:132px; min-height:132px; padding:10px;
+      background:#fff; color:var(--table-text);
+      border:1px solid var(--border); text-align:center;
+      vertical-align:middle; overflow:hidden;
+    }
+    .sign-placeholder {color:#8393a8;}
+    .sign-preview {max-width:92%;max-height:108px;object-fit:contain;}
+    .sign-actions {
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      align-items:start; gap:10px; padding:12px;
+      background:var(--table-alt); border-top:1px solid var(--border);
+    }
+    .file-btn-wrap {
+      min-width:0; width:100%; position:relative; flex:none;
+      display:flex; flex-direction:column; align-items:stretch;
+    }
+    .file-btn {
+      width:100%; height:40px; border:1px solid var(--border);
+      border-radius:9px; background:#eaf3ff; color:var(--primary);
+      font-weight:700; white-space:nowrap; overflow:hidden;
+    }
+    .file-status {
+      width:100%; overflow:hidden; text-overflow:ellipsis;
+      white-space:nowrap; padding:0 3px;
+    }
+    .file-input {z-index:2;}
+    .btn-clear-sign {
+      position:absolute; right:4px; top:4px; z-index:3;
+      width:30px;height:30px;background:#fee2e2;
+    }
+    .btn-add {
+      color:var(--primary); background:#edf5ff;
+      border-color:#8bb9ed;
+    }
+    .btn-add:hover,.btn-add:active {background:var(--accent-soft);color:#a64e00;border-color:var(--accent);}
+    .btn-preview {background:var(--primary);}
+    .btn-pdf {background:#1686e8;}
+    .btn-print {background:#18375f;}
+    .btn-help {background:var(--accent);color:#fff;}
+    .btn-save {background:var(--accent);}
+    .btn-modal.primary {background:var(--primary);}
+    .help-num,.hist-count {background:var(--primary);}
+    .toast {background:var(--primary);}
+    @media(max-width:420px) {
+      .main {padding-left:10px;padding-right:10px;}
+      #expenseTable thead th:last-child {width:116px;}
+      #expenseTable tbody td {padding:8px 6px;}
+      .amt-cell {width:100%;}
+      .sum-row {padding:10px 9px;}
+      .sum-label {font-size:12px;}
+      .sum-value {font-size:15px;}
+      .bank-input {width:104px;}
+      .sign-table td {height:120px;min-height:120px;}
+      .sign-table th {font-size:12px;padding:10px 5px;}
+      .theme-note {display:none;}
+    }
+    @media print {
+      .theme-bar {display:none!important;}
+      #expenseTable thead th,.sign-table th {
+        background:#0755b8!important;color:#fff!important;
+        -webkit-print-color-adjust:exact;print-color-adjust:exact;
       }
-      .ios-card, .expense-item {
-        box-shadow: none;
-        border: 1px solid #CCCCCC;
-        break-inside: avoid;
+      #expenseTable tbody td,.sign-table td {background:#fff!important;color:#18345b!important;}
+      .amt-display,.sum-value,.bank-input {color:#d71920!important;}
+      .sign-table {table-layout:fixed!important;}
+    }
+
+    /* ===== THEME PALETTES: identical geometry, color-only variations ===== */
+    :root {
+      --bg:#edf4fc; --card:#ffffff; --ink:#17345f; --muted:#617b9b;
+      --border:#d6e4f5; --primary:#0755b8; --accent:#f28a18;
+      --accent-soft:#fff1df; --danger:#e3262e; --success:#07865d;
+      --number:#e3262e; --blue2:#1686e8; --table-head:#0755b8;
+      --table-text:#17345f; --table-row:#ffffff; --table-alt:#f2f7fd;
+      --sign-head:#0755b8; --sign-head-text:#ffffff;
+    }
+    body[data-theme="corporate"] {
+      --bg:#f2f4f7; --card:#ffffff; --ink:#172b45; --muted:#53677f;
+      --border:#d3dbe5; --primary:#243b53; --accent:#c47a20;
+      --accent-soft:#f8efe2; --danger:#c62828; --success:#087f5b;
+      --number:#c62828; --blue2:#526d82; --table-head:#243b53;
+      --table-text:#172b45; --table-row:#ffffff; --table-alt:#f3f5f8;
+      --sign-head:#243b53; --sign-head-text:#ffffff;
+    }
+    body[data-theme="midnight"] {
+      --bg:#07172f; --card:#10294b; --ink:#f4f7ff; --muted:#c1cfe2;
+      --border:#345477; --primary:#123f78; --accent:#ff9b27;
+      --accent-soft:#263f5e; --danger:#ff6666; --success:#42d3a0;
+      --number:#ff6666; --blue2:#287fca; --table-head:#123f78;
+      --table-text:#183354; --table-row:#ffffff; --table-alt:#f1f6fc;
+      --sign-head:#123f78; --sign-head-text:#ffffff;
+    }
+    body[data-theme="amfc"] {
+      --bg:#fff5ed; --card:#ffffff; --ink:#173b59; --muted:#5e7890;
+      --border:#f0d9c8; --primary:#087d91; --accent:#f36b21;
+      --accent-soft:#fff0e5; --danger:#d62828; --success:#07865d;
+      --number:#d62828; --blue2:#19a4ad; --table-head:#087d91;
+      --table-text:#173b59; --table-row:#ffffff; --table-alt:#fff8f3;
+      --sign-head:#087d91; --sign-head-text:#ffffff;
+    }
+    /* Same shape, spacing, typography, and shadow behavior in every theme. */
+    body, body[data-theme] {
+      --radius:16px;
+      --shadow:0 5px 18px rgba(13,45,85,.11);
+    }
+    .topbar-title { display:none!important; }
+    .sum-value.total { color:#1474d4!important; }
+    .sum-value.remain,
+    .sum-value.remain.positive,
+    .sum-value.remain.negative { color:var(--success)!important; }
+    .sum-value.total,.sum-value.remain {
+      font-weight:800!important;
+      font-variant-numeric:tabular-nums;
+      text-align:right!important;
+    }
+
+    /* ===== FINAL REFINEMENTS: SUMMARY ORDER, VALUES, SIGNATURE GRID ===== */
+    .summary-grid { display:grid; grid-template-columns:minmax(0,1fr); }
+    .sum-row { min-width:0; }
+    .sum-label { flex:1 1 auto; min-width:0; }
+    .sum-value.total {
+      color:var(--success)!important;
+      font-weight:800;
+      font-variant-numeric:tabular-nums;
+      text-align:right;
+    }
+    .bank-wrap { flex:0 0 auto; min-width:0; }
+    .bank-input {
+      width:116px;
+      min-height:42px;
+      box-sizing:border-box;
+      text-align:right;
+      padding:8px 10px;
+      color:var(--number)!important;
+      -webkit-text-fill-color:var(--number);
+      font-size:16px;
+      font-weight:800;
+      font-variant-numeric:tabular-nums;
+      border:1.5px solid var(--number)!important;
+      border-radius:10px;
+      background:#fff!important;
+      box-shadow:inset 0 1px 2px rgba(20,50,90,.05),0 3px 9px rgba(227,38,46,.12);
+      outline:none;
+    }
+    .bank-input:focus {
+      border-color:var(--number)!important;
+      box-shadow:0 0 0 3px rgba(227,38,46,.13),0 4px 11px rgba(227,38,46,.13);
+    }
+    .bank-currency { color:var(--number)!important; }
+    .sign-card { width:100%; }
+    .sign-table {
+      width:100%!important;
+      table-layout:fixed!important;
+      border-collapse:collapse!important;
+    }
+    .sign-table thead tr,
+    .sign-table tbody tr { width:100%; }
+    .sign-table th,
+    .sign-table td {
+      width:50%!important;
+      min-width:0!important;
+      box-sizing:border-box!important;
+    }
+    .sign-table td {
+      height:132px!important;
+      min-height:132px!important;
+      padding:10px!important;
+      vertical-align:middle!important;
+      overflow:hidden;
+    }
+    .sign-table td > * { max-width:100%; }
+    .sign-actions {
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+      gap:10px!important;
+      align-items:stretch!important;
+    }
+    .file-btn-wrap {
+      width:100%!important;
+      min-width:0!important;
+      max-width:100%!important;
+      box-sizing:border-box!important;
+    }
+    .file-btn { width:100%!important; box-sizing:border-box!important; }
+    .file-status { text-align:center; }
+    @media(max-width:420px) {
+      .sum-row { gap:8px; }
+      .sum-label { font-size:12px; }
+      .bank-input { width:104px; min-height:40px; }
+      .sign-table td { height:124px!important; min-height:124px!important; }
+      .sign-actions { grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important; }
+    }
+    @media print {
+      .sum-value.total { color:#07865d!important; }
+      .bank-input { color:#e3262e!important; -webkit-text-fill-color:#e3262e!important; }
+      .sign-table { table-layout:fixed!important; }
+    }
+
+
+    body.pdf-export-mode .topbar,
+    body.pdf-export-mode .bottombar,
+    body.pdf-export-mode .theme-bar,
+    body.pdf-export-mode .drawer,
+    body.pdf-export-mode .date-edit-btn,
+    body.pdf-export-mode .btn-add,
+    body.pdf-export-mode .add-row-wrap,
+    body.pdf-export-mode .btn-row,
+    body.pdf-export-mode .file-btn-wrap,
+    body.pdf-export-mode .btn-clear-sign,
+    body.pdf-export-mode .preview-exit { display:none!important; }
+
+    /* ===== FINAL ALIGNMENT, SIGNATURE, PRINT AND THEME CONSISTENCY ===== */
+    /* Keep every theme on the exact same layout geometry; themes change palette only. */
+    body[data-theme="aba"], body[data-theme="corporate"],
+    body[data-theme="midnight"], body[data-theme="amfc"] {
+      --radius:16px;
+      --shadow:0 5px 18px rgba(13,65,130,.10);
+    }
+
+    /* The bank input occupies the same right-aligned value column as totals. */
+    .sum-row { display:flex; align-items:center; gap:12px; }
+    .sum-label { flex:1 1 auto; min-width:0; }
+    .bank-wrap {
+      position:relative!important;
+      display:block!important;
+      flex:0 0 116px!important;
+      width:116px!important;
+      min-width:116px!important;
+      height:42px;
+    }
+    .bank-input {
+      display:block!important;
+      width:100%!important;
+      height:42px!important;
+      box-sizing:border-box!important;
+      margin:0!important;
+      padding:8px 10px!important;
+      text-align:right!important;
+      font:800 16px/1.2 var(--font)!important;
+      font-variant-numeric:tabular-nums!important;
+      color:var(--number)!important;
+      -webkit-text-fill-color:var(--number)!important;
+      background:#fff!important;
+      border:1.5px solid var(--number)!important;
+      border-radius:10px!important;
+      box-shadow:inset 0 1px 2px rgba(20,50,90,.05),0 3px 9px rgba(227,38,46,.12)!important;
+    }
+    .bank-wrap.has-currency .bank-input { padding-right:29px!important; }
+    .bank-currency {
+      position:absolute!important;
+      right:9px!important;
+      top:50%!important;
+      transform:translateY(-50%)!important;
+      z-index:2;
+      color:var(--number)!important;
+      font-weight:800!important;
+      pointer-events:none;
+    }
+    .sum-value.total {
+      flex:0 0 116px;
+      width:116px;
+      box-sizing:border-box;
+      text-align:right!important;
+      color:#1474d4!important;
+      font-weight:800!important;
+      font-variant-numeric:tabular-nums;
+    }
+    .sum-value.remain {
+      flex:0 0 116px;
+      width:116px;
+      box-sizing:border-box;
+      text-align:right!important;
+    }
+
+    /* Equal signature columns, equal signature boxes, centered Khmer headings/content. */
+    .sign-table {
+      width:100%!important;
+      table-layout:fixed!important;
+      border-collapse:collapse!important;
+    }
+    .sign-table th,
+    .sign-table td {
+      width:50%!important;
+      min-width:0!important;
+      box-sizing:border-box!important;
+      text-align:center!important;
+      vertical-align:middle!important;
+    }
+    .sign-table th {
+      height:52px!important;
+      padding:10px 8px!important;
+      font-weight:700!important;
+      line-height:1.4!important;
+    }
+    .sign-table td {
+      height:142px!important;
+      min-height:142px!important;
+      padding:10px!important;
+      position:relative!important;
+      overflow:hidden!important;
+    }
+    .sign-placeholder {
+      display:block!important;
+      width:100%!important;
+      text-align:center!important;
+      margin:0 auto!important;
+    }
+    .sign-preview {
+      display:none;
+      max-width:90%!important;
+      max-height:112px!important;
+      object-fit:contain!important;
+      margin:0 auto!important;
+    }
+    .sign-actions {
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+      gap:10px!important;
+      align-items:start!important;
+    }
+    .file-btn-wrap {
+      width:100%!important;
+      min-width:0!important;
+      max-width:100%!important;
+      box-sizing:border-box!important;
+    }
+    .file-btn { width:100%!important; box-sizing:border-box!important; }
+
+    @page { size:A4 portrait; margin:10mm; }
+    @media print {
+      html,body { background:#fff!important; }
+      body { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+      .no-print,.bottombar,.topbar,.theme-bar,.drawer,.drawer-overlay,
+      .file-btn-wrap,.btn-clear-sign,.preview-exit { display:none!important; }
+      .main { max-width:none!important; width:100%!important; padding:0!important; margin:0!important; }
+      .summary-card,.sign-card,.table-card,.header-card {
+        box-shadow:none!important; break-inside:avoid!important;
       }
-      input, select {
-        border: none;
-        background: transparent;
-        padding: 0;
-        height: auto;
-        font-size: 12px;
+      .sum-value.total { color:#1474d4!important; }
+      .bank-input { color:#e3262e!important; -webkit-text-fill-color:#e3262e!important; }
+      .sign-table { table-layout:fixed!important; }
+      .sign-table th,.sign-table td { width:50%!important; }
+      #expenseTable { width:100%!important; }
+      #expenseTable tr,.sign-table tr { break-inside:avoid!important; }
+    }
+    @media(max-width:420px) {
+      .bank-wrap { flex-basis:104px!important; width:104px!important; min-width:104px!important; }
+      .sum-value.total,.sum-value.remain { flex-basis:104px; width:104px; }
+      .sign-table th { font-size:12px!important; }
+      .sign-table td { height:132px!important; min-height:132px!important; }
+    }
+
+
+    body.pdf-export-mode .topbar,
+    body.pdf-export-mode .theme-bar,
+    body.pdf-export-mode .bottombar,
+    body.pdf-export-mode .drawer,
+    body.pdf-export-mode .drawer-overlay,
+    body.pdf-export-mode .file-btn-wrap,
+    body.pdf-export-mode .btn-clear-sign,
+    body.pdf-export-mode .date-edit-btn { display:none!important; }
+    body.pdf-export-mode .main {
+      width:186mm!important; max-width:186mm!important;
+      margin:0 auto!important; padding:0!important;
+      border:0!important; box-shadow:none!important;
+      background:#fff!important;
+    }
+    /* Output 0: compact phone-first data-entry layout. */
+    body[data-output="mobile"] .main {
+      max-width:640px;
+      padding-left:14px;
+      padding-right:14px;
+    }
+    body[data-output="mobile"] .theme-bar {
+      max-width:640px;
+    }
+    /* Output 1: document-like A4 composition, still responsive on a phone. */
+    body[data-output="formal"] .main {
+      max-width:794px;
+      padding:18px 22px 110px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:4px;
+      box-shadow:0 8px 30px rgba(12,35,65,.12);
+      margin:14px auto 28px;
+    }
+    body[data-output="formal"] .header-card {
+      border-radius:4px;
+      box-shadow:none;
+      border:1px solid #cbd5e1;
+    }
+    body[data-output="formal"] .table-card,
+    body[data-output="formal"] .summary-card,
+    body[data-output="formal"] .sign-card {
+      border-radius:4px;
+      box-shadow:none;
+      border:1px solid #cbd5e1;
+    }
+    body[data-output="formal"] #expenseTable thead th,
+    body[data-output="formal"] .sign-table th {
+      letter-spacing:.01em;
+    }
+    body[data-output="formal"] .sign-table td { height:150px!important; }
+    body[data-output="formal"] .doc-title { font-size:22px; }
+    body[data-output="formal"] .doc-subtitle { letter-spacing:.08em; }
+    .output-label { margin-left:8px; }
+    #outputMode {
+      min-height:34px;
+      border:1px solid var(--border);
+      border-radius:9px;
+      padding:5px 26px 5px 9px;
+      background:var(--card);
+      color:var(--ink);
+      font:600 12px var(--font);
+      max-width:190px;
+    }
+    @page { size:A4 portrait; margin:12mm; }
+    @media print {
+      html,body { width:210mm!important; background:#fff!important; }
+      body { margin:0!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+      .main {
+        width:186mm!important;
+        max-width:186mm!important;
+        margin:0 auto!important;
+        padding:0!important;
+        border:0!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+        background:#fff!important;
+      }
+      .topbar,.theme-bar,.bottombar,.drawer,.drawer-overlay,.modal-overlay,
+      .toast,.no-print,.date-edit-btn,.btn-row,.file-btn-wrap,.btn-clear-sign,
+      .preview-exit { display:none!important; }
+      .header-card,.table-card,.summary-card,.sign-card {
+        box-shadow:none!important;
+        break-inside:avoid!important;
+        page-break-inside:avoid!important;
+      }
+      #expenseTable { width:100%!important; table-layout:fixed!important; }
+      #expenseTable tr,.sign-table tr { break-inside:avoid!important; page-break-inside:avoid!important; }
+      .sign-table { width:100%!important; table-layout:fixed!important; }
+      .sign-table th,.sign-table td { width:50%!important; text-align:center!important; }
+      .sum-value.total { color:#1474d4!important; }
+      .sum-value.remain { color:#07865d!important; }
+      .bank-input { color:#e3262e!important; -webkit-text-fill-color:#e3262e!important; }
+    }
+    @media(max-width:520px) {
+      .theme-bar { gap:7px; }
+      .theme-bar select,#outputMode { max-width:calc(50vw - 28px); }
+      .output-label { margin-left:0; }
+      body[data-output="formal"] .main {
+        width:calc(100% - 20px);
+        max-width:none;
+        padding:12px 10px 100px;
+        box-sizing:border-box;
       }
     }
-  </style>
+
+
+    /* ===== REDESIGNED HEADER + EXPENSE DETAIL ===== */
+    .header-card {
+      position:relative;
+      overflow:hidden;
+      padding:0 18px 17px;
+      border-radius:18px;
+      border-top:0;
+    }
+    .header-brandline {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 -18px 15px;
+      padding:13px 17px;
+      color:#fff;
+      background:linear-gradient(112deg,var(--primary),var(--blue2));
+    }
+    .header-brand-mark {
+      width:37px;height:37px;flex:0 0 37px;
+      display:grid;place-items:center;
+      border:1.5px solid rgba(255,255,255,.75);
+      border-radius:11px;
+      background:rgba(255,255,255,.15);
+      font-size:21px;font-weight:900;font-style:italic;
+      box-shadow:inset 0 1px 3px rgba(255,255,255,.2);
+    }
+    .header-brand-copy {display:flex;flex-direction:column;gap:2px;min-width:0;}
+    .header-brand-copy strong {font-size:16px;letter-spacing:.09em;line-height:1.1;}
+    .header-brand-copy span {font-size:9px;letter-spacing:.11em;opacity:.86;font-weight:700;}
+    .header-doc-chip {
+      margin-left:auto;padding:5px 9px;border:1px solid rgba(255,255,255,.5);
+      border-radius:20px;font-size:9px;font-weight:800;letter-spacing:.1em;
+      white-space:nowrap;background:rgba(255,255,255,.12);
+    }
+    .header-title-block {padding:1px 2px 13px;text-align:center;}
+    .doc-title {font-size:22px;line-height:1.45;margin-bottom:2px;color:var(--ink);}
+    .doc-subtitle {font-size:10px;font-weight:800;letter-spacing:.16em;margin-bottom:0;color:var(--muted);}
+    .meta-row {
+      padding-top:12px;border-top:1px solid var(--border);
+      gap:10px 14px;
+    }
+    .meta-item {font-size:12px;}
+    .meta-label {font-size:12px;}
+    .date-wrap {
+      border-radius:10px;background:var(--table-alt);
+      border-color:var(--border);padding:5px 8px 5px 10px;
+    }
+    .company-badge {
+      border-radius:20px;padding:6px 13px;
+      box-shadow:0 3px 8px rgba(0,0,0,.12);
+    }
+    .table-card {border-radius:17px;overflow:hidden;}
+    .detail-heading {
+      display:flex;align-items:center;gap:11px;
+      padding:13px 15px;color:#fff;
+      background:linear-gradient(112deg,var(--table-head),var(--blue2));
+    }
+    .detail-heading-icon {
+      width:35px;height:35px;flex:0 0 35px;
+      display:grid;place-items:center;
+      border-radius:10px;background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.28);
+      font-size:21px;font-weight:700;
+    }
+    .detail-heading h2 {font-size:14px;line-height:1.4;font-weight:800;}
+    .detail-heading p {font-size:9px;letter-spacing:.14em;font-weight:700;opacity:.82;margin-top:1px;}
+    .detail-heading-tag {
+      margin-left:auto;border-radius:7px;padding:4px 8px;
+      font-size:10px;font-weight:800;letter-spacing:.08em;
+      background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+    }
+    #expenseTable thead th {padding:13px 10px;font-size:12px;}
+    #expenseTable tbody td {padding-top:10px;padding-bottom:10px;}
+    @media(max-width:420px) {
+      .header-card {padding-left:13px;padding-right:13px;}
+      .header-brandline {margin-left:-13px;margin-right:-13px;padding:12px 13px;}
+      .header-brand-copy span {font-size:8px;letter-spacing:.07em;}
+      .doc-title {font-size:19px;}
+      .meta-row {align-items:flex-start;}
+      .detail-heading {padding:12px;}
+    }
+    @media print {
+      .header-brandline,.detail-heading {
+        -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
+      }
+    }
+
+    /* Fifth palette: the new Default AMFC blue-and-white look. */
+    body[data-theme="default"] {
+      --bg:#edf5ff; --card:#ffffff; --ink:#102f60; --muted:#647b9c;
+      --border:#d5e4f7; --primary:#0757bd; --accent:#f28a18;
+      --accent-soft:#fff2df; --danger:#e3262e; --success:#07865d;
+      --number:#df252d; --blue2:#1688ed; --table-head:#0757bd;
+      --table-text:#17365f; --table-row:#ffffff; --table-alt:#f2f7ff;
+      --sign-head:#0757bd; --sign-head-text:#ffffff;
+    }
+
+
+    /* Output 1 style selector: only shown while Formal A4 is selected. */
+    .formal-style-wrap { display:none; align-items:center; gap:6px; }
+    body[data-output="formal"] .formal-style-wrap { display:inline-flex; }
+    #formalStyle {
+      min-height:34px; max-width:190px;
+      border:1px solid var(--border); border-radius:9px;
+      padding:5px 26px 5px 9px; background:var(--card);
+      color:var(--ink); font:600 12px var(--font);
+    }
+    @media(max-width:520px) {
+      .formal-style-wrap { flex-basis:100%; }
+      #formalStyle { flex:1; max-width:none; }
+    }
+
+    /* Output 1 / Option 1 — clean monochrome document (default). */
+    body[data-output="formal"][data-formal-style="monochrome"] .main,
+    body[data-output="formal"][data-formal-style="monochrome"] .header-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .table-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .summary-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-card {
+      background:#fff!important; color:#111!important;
+      border-color:#777!important; box-shadow:none!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .header-brandline,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading,
+    body[data-output="formal"][data-formal-style="monochrome"] .summary-title,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table th,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable thead th {
+      background:#e9e9e9!important; color:#111!important;
+      border-color:#888!important; text-shadow:none!important;
+      box-shadow:none!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .header-brand-mark,
+    body[data-output="formal"][data-formal-style="monochrome"] .header-doc-chip,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading-icon,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading-tag,
+    body[data-output="formal"][data-formal-style="monochrome"] .company-badge {
+      background:#f4f4f4!important; color:#111!important;
+      border:1px solid #999!important; box-shadow:none!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .doc-title,
+    body[data-output="formal"][data-formal-style="monochrome"] .doc-subtitle,
+    body[data-output="formal"][data-formal-style="monochrome"] .header-brand-copy,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading h2,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading p,
+    body[data-output="formal"][data-formal-style="monochrome"] .detail-heading-tag,
+    body[data-output="formal"][data-formal-style="monochrome"] .meta-label,
+    body[data-output="formal"][data-formal-style="monochrome"] .date-display,
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-label,
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-value,
+    body[data-output="formal"][data-formal-style="monochrome"] .bank-input,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-placeholder,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable th,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable td,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table th,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table td {
+      color:#111!important; -webkit-text-fill-color:#111!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-row,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable th,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable td,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table th,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table td,
+    body[data-output="formal"][data-formal-style="monochrome"] .date-wrap {
+      background:#fff!important; border-color:#999!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-row:nth-child(odd),
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable tbody tr:nth-child(even) td {
+      background:#f7f7f7!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .bank-input {
+      border:1px solid #888!important; background:#fff!important;
+    }
+
+    /* Output 1 / Option 2 — selected application theme colors. */
+    body[data-output="formal"][data-formal-style="theme"] .header-brandline,
+    body[data-output="formal"][data-formal-style="theme"] .detail-heading,
+    body[data-output="formal"][data-formal-style="theme"] .summary-title,
+    body[data-output="formal"][data-formal-style="theme"] .sign-table th,
+    body[data-output="formal"][data-formal-style="theme"] #expenseTable thead th {
+      -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important;
+    }
+
+    @media print {
+      body[data-output="formal"][data-formal-style="monochrome"] *,
+      body[data-output="formal"][data-formal-style="monochrome"] *::before,
+      body[data-output="formal"][data-formal-style="monochrome"] *::after {
+        text-shadow:none!important; box-shadow:none!important;
+      }
+      body[data-output="formal"][data-formal-style="monochrome"] .header-brandline,
+      body[data-output="formal"][data-formal-style="monochrome"] .detail-heading,
+      body[data-output="formal"][data-formal-style="monochrome"] .summary-title,
+      body[data-output="formal"][data-formal-style="monochrome"] .sign-table th,
+      body[data-output="formal"][data-formal-style="monochrome"] #expenseTable thead th {
+        background:#e9e9e9!important; color:#111!important;
+      }
+      body[data-output="formal"][data-formal-style="monochrome"] .sum-value.total,
+      body[data-output="formal"][data-formal-style="monochrome"] .sum-value.remain,
+      body[data-output="formal"][data-formal-style="monochrome"] .bank-input {
+        color:#111!important; -webkit-text-fill-color:#111!important;
+      }
+      body[data-output="formal"][data-formal-style="monochrome"] table,
+      body[data-output="formal"][data-formal-style="monochrome"] th,
+      body[data-output="formal"][data-formal-style="monochrome"] td {
+        border-color:#888!important;
+      }
+      body[data-output="formal"][data-formal-style="theme"] .sum-value.total {
+        color:var(--primary)!important; -webkit-text-fill-color:var(--primary)!important;
+      }
+      body[data-output="formal"][data-formal-style="theme"] .sum-value.remain {
+        color:var(--success)!important; -webkit-text-fill-color:var(--success)!important;
+      }
+      body[data-output="formal"][data-formal-style="theme"] .bank-input {
+        color:var(--danger)!important; -webkit-text-fill-color:var(--danger)!important;
+      }
+    }
+
+
+
+    /* ===== FORMAL A4 DOCUMENT REFINEMENT ===== */
+    body[data-output="formal"] .main {
+      width:min(100% - 28px, 794px);
+      max-width:794px;
+      padding:20px 24px 24px;
+      margin:18px auto 30px;
+      background:#fff;
+      border:1px solid #d8e0ea;
+      border-radius:5px;
+      box-shadow:0 10px 32px rgba(18,38,63,.10);
+      color:#172033;
+    }
+    body[data-output="formal"] .header-card {
+      padding:0 0 12px;
+      margin-bottom:12px;
+      border:0;
+      border-bottom:2px solid var(--border);
+      border-radius:0;
+      box-shadow:none;
+      background:#fff;
+    }
+    body[data-output="formal"] .header-brandline {
+      margin:0 0 12px;
+      padding:9px 13px;
+      border-radius:3px;
+    }
+    body[data-output="formal"] .header-title-block {padding:2px 0 10px;}
+    body[data-output="formal"] .doc-title {font-size:23px;line-height:1.35;}
+    body[data-output="formal"] .doc-subtitle {font-size:10px;letter-spacing:.12em;margin:0;}
+    body[data-output="formal"] .meta-row {
+      padding-top:10px;
+      border-top:1px solid var(--border);
+      gap:8px 18px;
+    }
+    body[data-output="formal"] .table-card,
+    body[data-output="formal"] .summary-card,
+    body[data-output="formal"] .sign-card {
+      border:1px solid var(--border);
+      border-radius:4px;
+      box-shadow:none;
+      margin-bottom:11px;
+      overflow:hidden;
+    }
+    body[data-output="formal"] .detail-heading {
+      padding:9px 12px;
+      border-radius:0;
+    }
+    body[data-output="formal"] #expenseTable {
+      width:100%;
+      table-layout:fixed;
+      border-collapse:collapse;
+    }
+    body[data-output="formal"] #expenseTable th:first-child,
+    body[data-output="formal"] #expenseTable td:first-child {width:9%;text-align:center;}
+    body[data-output="formal"] #expenseTable th:nth-child(2),
+    body[data-output="formal"] #expenseTable td:nth-child(2) {width:59%;text-align:left;}
+    body[data-output="formal"] #expenseTable th:last-child,
+    body[data-output="formal"] #expenseTable td:last-child {width:32%;text-align:right;}
+    body[data-output="formal"] #expenseTable thead th {
+      padding:9px 9px;
+      font-size:11px;
+      line-height:1.35;
+      border-bottom:1px solid var(--border);
+    }
+    body[data-output="formal"] #expenseTable tbody td {
+      padding:7px 9px;
+      font-size:11px;
+      line-height:1.35;
+      vertical-align:middle;
+      border-bottom:1px solid var(--border);
+    }
+    body[data-output="formal"] .summary-card {padding:0;}
+    body[data-output="formal"] .summary-title {
+      padding:9px 12px;
+      margin:0;
+      font-size:11px;
+      border-bottom:1px solid var(--border);
+    }
+    body[data-output="formal"] .summary-grid {
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:0;
+      padding:8px;
+    }
+    body[data-output="formal"] .sum-row {
+      min-width:0;
+      min-height:62px;
+      padding:8px 10px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:center;
+      gap:5px;
+      border:0;
+      border-right:1px solid var(--border);
+      border-radius:0;
+      background:transparent;
+    }
+    body[data-output="formal"] .sum-row:last-child {border-right:0;}
+    body[data-output="formal"] .sum-label {font-size:10px;line-height:1.35;}
+    body[data-output="formal"] .sum-value {font-size:15px;line-height:1.2;}
+    body[data-output="formal"] .bank-wrap {width:100%;height:auto;min-width:0!important;flex:1 1 auto!important;}
+    body[data-output="formal"] .bank-input {
+      width:100%!important;
+      height:29px!important;
+      min-height:29px!important;
+      font-size:13px;
+      text-align:left;
+    }
+    body[data-output="formal"] .sign-card {margin-bottom:0;}
+    body[data-output="formal"] .sign-table {width:100%;table-layout:fixed;border-collapse:collapse;}
+    body[data-output="formal"] .sign-table th {
+      padding:9px 8px;
+      font-size:11px;
+      border-bottom:1px solid var(--border);
+    }
+    body[data-output="formal"] .sign-table td {
+      height:88px!important;
+      min-height:88px!important;
+      padding:7px;
+      border-top:0;
+    }
+    body[data-output="formal"] .sign-actions {padding:8px 10px;}
+    body[data-output="formal"] .sign-preview {max-height:64px;}
+    body[data-output="formal"] .add-row-wrap {padding:8px 10px;}
+    body[data-output="formal"] .btn-add {height:34px;font-size:11px;}
+
+    @media(max-width:520px) {
+      body[data-output="formal"] .main {
+        width:calc(100% - 16px);
+        max-width:none;
+        padding:12px 9px 18px;
+        margin:8px auto 18px;
+      }
+      body[data-output="formal"] .doc-title {font-size:19px;}
+      body[data-output="formal"] .summary-grid {grid-template-columns:1fr;}
+      body[data-output="formal"] .sum-row {
+        min-height:0;
+        flex-direction:row;
+        align-items:center;
+        border-right:0;
+        border-bottom:1px solid var(--border);
+      }
+      body[data-output="formal"] .sum-row:last-child {border-bottom:0;}
+      body[data-output="formal"] .bank-wrap {max-width:130px;}
+    }
+
+    /* A4 is always portrait. 8 mm margins give a 194 × 281 mm printable area. */
+    @page { size:A4 portrait; margin:8mm; }
+    body.a4-one-page-fit #mainContent {
+      width:calc(194mm / var(--a4-fit-scale,1))!important;
+      max-width:none!important;
+      padding:0!important;
+      margin:0 auto!important;
+      margin-bottom:var(--a4-negative-space,0px)!important;
+      transform:scale(var(--a4-fit-scale,1))!important;
+      transform-origin:top center!important;
+      box-shadow:none!important;
+      border:0!important;
+      border-radius:0!important;
+    }
+    @media print {
+      html,body {width:210mm!important;height:auto!important;background:#fff!important;}
+      body {margin:0!important;padding:0!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+      body.a4-one-page-fit #mainContent {
+        width:calc(194mm / var(--a4-fit-scale,1))!important;
+        margin:0 auto!important;
+        margin-bottom:var(--a4-negative-space,0px)!important;
+        transform:scale(var(--a4-fit-scale,1))!important;
+        transform-origin:top center!important;
+      }
+      body.a4-one-page-fit .header-card,
+      body.a4-one-page-fit .table-card,
+      body.a4-one-page-fit .summary-card,
+      body.a4-one-page-fit .sign-card,
+      body.a4-one-page-fit #expenseTable tr,
+      body.a4-one-page-fit .sign-table tr {
+        break-inside:auto!important;
+        page-break-inside:auto!important;
+      }
+      body[data-output="formal"] .main {background:#fff!important;}
+      body[data-output="formal"] .add-row-wrap,
+      body[data-output="formal"] .sign-actions {display:none!important;}
+    }
+
+  
+    /* ===== ACCESSIBLE THEME COLORS + CLEAN OUTPUT 1 ===== */
+
+    /* Harmonized, higher-contrast palettes for every application theme. */
+    body[data-theme="default"] {
+      --bg:#edf3fa; --card:#ffffff; --ink:#173252; --muted:#526982;
+      --border:#cfdae7; --primary:#0757bd; --accent:#e98216;
+      --accent-soft:#fff1df; --danger:#c62828; --success:#087653;
+      --number:#c62828; --blue2:#1478cf; --table-head:#0757bd;
+      --table-text:#203b5b; --table-row:#ffffff; --table-alt:#f1f5fa;
+      --sign-head:#0757bd; --sign-head-text:#ffffff;
+    }
+    body[data-theme="aba"] {
+      --bg:#edf4ff; --card:#ffffff; --ink:#16345c; --muted:#526b8b;
+      --border:#cbdcf3; --primary:#064da8; --accent:#e58a19;
+      --accent-soft:#fff3e2; --danger:#c62828; --success:#087653;
+      --number:#c62828; --blue2:#287bd0; --table-head:#064da8;
+      --table-text:#1d3a63; --table-row:#ffffff; --table-alt:#f1f6fd;
+      --sign-head:#064da8; --sign-head-text:#ffffff;
+    }
+    body[data-theme="corporate"] {
+      --bg:#eef1f4; --card:#ffffff; --ink:#1b2d40; --muted:#526477;
+      --border:#d0d8e0; --primary:#263f58; --accent:#a96818;
+      --accent-soft:#f8efe3; --danger:#b4232b; --success:#087653;
+      --number:#b4232b; --blue2:#526f89; --table-head:#263f58;
+      --table-text:#203449; --table-row:#ffffff; --table-alt:#f2f5f7;
+      --sign-head:#263f58; --sign-head-text:#ffffff;
+    }
+    body[data-theme="midnight"] {
+      --bg:#0b1a2d; --card:#132a45; --ink:#f4f7fb; --muted:#c0ccda;
+      --border:#38516d; --primary:#173f70; --accent:#f2a23b;
+      --accent-soft:#263d57; --danger:#ff7777; --success:#55d6a4;
+      --number:#c62828; --blue2:#2a78b9; --table-head:#173f70;
+      --table-text:#203a58; --table-row:#ffffff; --table-alt:#edf3f9;
+      --sign-head:#173f70; --sign-head-text:#ffffff;
+    }
+    body[data-theme="amfc"] {
+      --bg:#f5f1ec; --card:#ffffff; --ink:#17384d; --muted:#526d7d;
+      --border:#dfd6cc; --primary:#087889; --accent:#e9651b;
+      --accent-soft:#fff0e5; --danger:#bd2929; --success:#087653;
+      --number:#bd2929; --blue2:#1596a2; --table-head:#087889;
+      --table-text:#1b4054; --table-row:#ffffff; --table-alt:#faf5f0;
+      --sign-head:#087889; --sign-head-text:#ffffff;
+    }
+
+    /* Theme colors stay readable in the app, including editable fields. */
+    body[data-theme] { background:var(--bg); color:var(--ink); }
+    body[data-theme] .header-card,
+    body[data-theme] .table-card,
+    body[data-theme] .summary-card,
+    body[data-theme] .sign-card { background:var(--card); border-color:var(--border); }
+    body[data-theme] .meta-label,
+    body[data-theme] .sum-label,
+    body[data-theme] .summary-title { color:var(--muted); }
+    body[data-theme] .desc-input,
+    body[data-theme] .amt-input { color:var(--table-text); }
+    body[data-theme] .desc-input::placeholder,
+    body[data-theme] .amt-input::placeholder { color:var(--muted); opacity:1; }
+    body[data-theme] .sum-row { background:var(--table-alt); border-color:var(--border); }
+    body[data-theme] .date-wrap { background:var(--table-alt); border-color:var(--border); }
+    body[data-theme] .btn-add { color:var(--primary); border-color:var(--border); }
+    body[data-theme] .theme-bar label,
+    body[data-theme] .output-label { color:var(--ink); }
+    body[data-theme] .theme-bar select,
+    body[data-theme] #outputMode,
+    body[data-theme] #formalStyle {
+      color:var(--ink); background:var(--card); border-color:var(--border);
+    }
+    body[data-theme] .amt-display { color:var(--number); }
+    body[data-theme] .bank-input { color:var(--number)!important; -webkit-text-fill-color:var(--number)!important; }
+
+    /* Output 1 is a flat A4 report: no decorative shadows or rounded cards. */
+    body[data-output="formal"] .main,
+    body[data-output="formal"] .header-card,
+    body[data-output="formal"] .table-card,
+    body[data-output="formal"] .summary-card,
+    body[data-output="formal"] .sign-card,
+    body[data-output="formal"] .company-badge,
+    body[data-output="formal"] .amt-display,
+    body[data-output="formal"] .bank-input,
+    body[data-output="formal"] .sum-row {
+      box-shadow:none!important;
+      text-shadow:none!important;
+      border-radius:0!important;
+    }
+    body[data-output="formal"] .main {
+      border:0!important;
+      outline:0!important;
+    }
+    body[data-output="formal"] .header-card,
+    body[data-output="formal"] .table-card,
+    body[data-output="formal"] .summary-card,
+    body[data-output="formal"] .sign-card {
+      border:1px solid var(--border)!important;
+    }
+    body[data-output="formal"] .header-card {
+      border-top:0!important;
+      border-left:0!important;
+      border-right:0!important;
+    }
+    body[data-output="formal"] .amt-display,
+    body[data-output="formal"] .bank-input {
+      border:1px solid var(--border)!important;
+      background:#fff!important;
+    }
+    body[data-output="formal"][data-formal-style="theme"] .header-brandline,
+    body[data-output="formal"][data-formal-style="theme"] .detail-heading,
+    body[data-output="formal"][data-formal-style="theme"] .summary-title,
+    body[data-output="formal"][data-formal-style="theme"] .sign-table th,
+    body[data-output="formal"][data-formal-style="theme"] #expenseTable thead th {
+      color:#fff!important;
+      -webkit-print-color-adjust:exact!important;
+      print-color-adjust:exact!important;
+    }
+    body[data-output="formal"][data-formal-style="theme"] .sum-value.total {
+      color:var(--primary)!important; -webkit-text-fill-color:var(--primary)!important;
+    }
+    body[data-output="formal"][data-formal-style="theme"] .sum-value.remain {
+      color:var(--success)!important; -webkit-text-fill-color:var(--success)!important;
+    }
+    body[data-output="formal"][data-formal-style="theme"] .bank-input {
+      color:var(--danger)!important; -webkit-text-fill-color:var(--danger)!important;
+    }
+
+    /* Monochrome remains the default Output 1 style, without color bleed. */
+    body[data-output="formal"][data-formal-style="monochrome"] .main,
+    body[data-output="formal"][data-formal-style="monochrome"] .header-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .table-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .summary-card,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-card {
+      background:#fff!important; color:#111!important;
+    }
+    body[data-output="formal"][data-formal-style="monochrome"] .doc-title,
+    body[data-output="formal"][data-formal-style="monochrome"] .doc-subtitle,
+    body[data-output="formal"][data-formal-style="monochrome"] .meta-label,
+    body[data-output="formal"][data-formal-style="monochrome"] .date-display,
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-label,
+    body[data-output="formal"][data-formal-style="monochrome"] .sum-value,
+    body[data-output="formal"][data-formal-style="monochrome"] .bank-input,
+    body[data-output="formal"][data-formal-style="monochrome"] #expenseTable td,
+    body[data-output="formal"][data-formal-style="monochrome"] .sign-table td {
+      color:#111!important; -webkit-text-fill-color:#111!important;
+    }
+    @media print {
+      body[data-output="formal"] .main,
+      body[data-output="formal"] .header-card,
+      body[data-output="formal"] .table-card,
+      body[data-output="formal"] .summary-card,
+      body[data-output="formal"] .sign-card,
+      body[data-output="formal"] * {
+        box-shadow:none!important; text-shadow:none!important;
+      }
+    }
+
+</style>
 </head>
 <body>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M4 7h16M4 12h16M4 17h16"/>
+      </svg>
+    </button>
+    <div class="topbar-title" aria-label="AMFC"></div>
+    <div class="top-actions">
+      <button class="btn-icon" id="btnUndo" title="Undo" aria-label="Undo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a5 5 0 0 1 0 10H9"/><path d="M7 6l-4 4 4 4"/></svg>
+      </button>
+      <button class="btn-icon" id="btnRedo" title="Redo" aria-label="Redo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H11a5 5 0 0 0 0 10h4"/><path d="M17 6l4 4-4 4"/></svg>
+      </button>
+      <button class="btn-top btn-save" id="btnSave">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span>Save</span>
+      </button>
+      <button class="btn-top btn-history" id="btnHistory">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>History</span>
+      </button>
+    </div>
+  </header>
 
-  <div class="ios-header">
-    <h1>តារាងបញ្ជីប្រចាំថ្ងៃ</h1>
-    <span id="saveStatus" class="status-pill">បានរក្សាទុករួចរាល់!</span>
+  <div class="theme-bar no-print">
+    <label for="themeSelect">Theme</label>
+    <select id="themeSelect" aria-label="Choose app theme">
+      <option value="default">Default · AMFC Blue</option>
+      <option value="aba">Royal Blue & White</option>
+      <option value="corporate">Executive Slate</option>
+      <option value="midnight">Midnight Contrast</option>
+      <option value="amfc">AMFC Teal & Orange</option>
+    </select>
+    <label for="outputMode" class="output-label">Output</label>
+    <select id="outputMode" aria-label="Choose output layout">
+      <option value="mobile">Output 0 · Mobile</option>
+      <option value="formal">Output 1 · Formal A4</option>
+    </select>
+    <span id="formalStyleWrap" class="formal-style-wrap">
+      <label for="formalStyle">A4 Style</label>
+      <select id="formalStyle" aria-label="Choose formal A4 style">
+        <option value="monochrome">Monochrome · Default</option>
+        <option value="theme">By Theme</option>
+      </select>
+    </span>
   </div>
 
-  <!-- Secondary Actions -->
-  <div class="utility-scroll">
-    <button class="chip-btn" onclick="resetForm()">+ បង្កើតថ្មី (New)</button>
-    <button class="chip-btn" onclick="openHistory()">ប្រវត្តិ (History)</button>
-    <button class="chip-btn" onclick="exportCSV()">Export CSV</button>
-    <button class="chip-btn" onclick="backupJSON()">Backup JSON</button>
-    <button class="chip-btn" onclick="document.getElementById('importFile').click()">Import</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+  <!-- DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2>Navigation</h2>
+      <button class="drawer-close" id="drawerClose">×</button>
+    </div>
+    <nav class="drawer-nav">
+      <button class="drawer-item" data-action="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Search
+      </button>
+      <button class="drawer-item" data-action="new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+        New Doc
+      </button>
+      <button class="drawer-item" data-action="input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Input <span class="badge">Date filter</span>
+      </button>
+      <button class="drawer-item" data-action="output">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Output <span class="badge">Date filter</span>
+      </button>
+      <button class="drawer-item" data-action="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History <span class="badge">Date filter</span>
+      </button>
+      <button class="drawer-item" data-action="save">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save
+      </button>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainContent">
+    <!-- Redesigned report header -->
+    <section class="header-card">
+      <div class="header-brandline">
+        <span class="header-brand-mark">A</span>
+        <div class="header-brand-copy">
+          <strong>AMFC</strong>
+          <span>DAILY FINANCE · EXPENSE CONTROL</span>
+        </div>
+        <span class="header-doc-chip">REPORT</span>
+      </div>
+      <div class="header-title-block">
+        <h1 class="doc-title">តារាងបញ្ជីប្រចាំថ្ងៃ</h1>
+        <p class="doc-subtitle">Daily Expense Sheet</p>
+      </div>
+      <div class="meta-row">
+        <div class="meta-item">
+          <span class="meta-label">ថ្ងៃទី / ខែ / ឆ្នាំ:</span>
+          <div class="date-wrap">
+            <span class="date-display" id="dateDisplay">16/Nov/2026</span>
+            <input type="date" class="date-input" id="dateInput" />
+            <button class="date-edit-btn no-print" id="dateEditBtn" title="Edit date" aria-label="Edit date">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">ក្រុមហ៊ុន:</span>
+          <span class="company-badge">AMFC</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Expense Details -->
+    <section class="table-card">
+      <div class="detail-heading">
+        <div class="detail-heading-icon" aria-hidden="true">▤</div>
+        <div>
+          <h2>ព័ត៌មានលម្អិតចំណាយ</h2>
+          <p>EXPENSE DETAILS</p>
+        </div>
+        <span class="detail-heading-tag">AMFC</span>
+      </div>
+      <div class="table-scroll">
+        <table id="expenseTable">
+          <thead>
+            <tr>
+              <th>ល.រ</th>
+              <th>បរិយាយ (មុខចំណាយ)</th>
+              <th>ចំនួនទឹកប្រាក់ (៛)</th>
+            </tr>
+          </thead>
+          <tbody id="expenseBody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div class="add-row-wrap no-print">
+        <button class="btn-add" id="btnAddRow">
+          <span style="font-size:18px;line-height:1">+</span>
+          បន្ថែមថ្មី
+        </button>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="summary-card">
+      <div class="summary-title">សរុប & សមតុល្យ</div>
+      <div class="summary-grid">
+        <div class="sum-row">
+          <span class="sum-label">លុយធនាគារ ABA (Bank Money)</span>
+          <div class="bank-wrap">
+            <input type="number" class="bank-input" id="bankMoney" value="0" min="0" step="1" inputmode="decimal" />
+            <span class="bank-currency" id="bankCurrency"></span>
+          </div>
+        </div>
+        <div class="sum-row">
+          <span class="sum-label">ចំណាយសរុប (Total Expense)</span>
+          <span class="sum-value total" id="totalExpenses">0</span>
+        </div>
+        <div class="sum-row">
+          <span class="sum-label">នៅសល់ (Remind Balance)</span>
+          <span class="sum-value remain" id="remaining">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Signatures -->
+    <section class="sign-card">
+      <table class="sign-table">
+        <thead>
+          <tr>
+            <th>អ្នកធ្វើបញ្ជី</th>
+            <th>អ្នកត្រួតពិនិត្យ / អនុម័ត</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="sign-placeholder" id="signPlace1">ឈ្មោះ / ហត្ថលេខា</span>
+              <img class="sign-preview" id="signImg1" alt="Signature 1" />
+            </td>
+            <td>
+              <span class="sign-placeholder" id="signPlace2">ឈ្មោះ / ហត្ថលេខា</span>
+              <img class="sign-preview" id="signImg2" alt="Signature 2" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="sign-actions no-print">
+        <div class="file-btn-wrap">
+          <button class="file-btn" type="button">Choose File</button>
+          <input type="file" class="file-input" id="signFile1" accept="image/*" />
+          <div class="file-status" id="signStatus1">no file selected</div>
+          <button class="btn-clear-sign" id="clearSign1" title="Clear" aria-label="Clear signature 1">×</button>
+        </div>
+        <div class="file-btn-wrap">
+          <button class="file-btn" type="button">Choose File</button>
+          <input type="file" class="file-input" id="signFile2" accept="image/*" />
+          <div class="file-status" id="signStatus2">no file selected</div>
+          <button class="btn-clear-sign" id="clearSign2" title="Clear" aria-label="Clear signature 2">×</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM BAR -->
+  <footer class="bottombar no-print">
+    <button class="btn-bottom btn-preview" id="btnPreview">Preview</button>
+    <button class="btn-bottom btn-pdf" id="btnPdf">PDF (A4)</button>
+    <button class="btn-bottom btn-print" id="btnPrint">Print</button>
+    <button class="btn-help" id="btnHelp" title="Help / Guideline">!</button>
+  </footer>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>របៀបប្រើប្រាស់ / Guideline</h3>
+        <button class="modal-close" id="helpClose">×</button>
+      </div>
+      <div class="modal-body">
+        <ul class="help-list">
+          <li><span class="help-num">1</span><span>Date បង្ហាញស្វ័យប្រវត្តិ (16/Nov/2026)។ ចុច icon ខ្មៅដើម្បីកែ។ នៅពេល Preview/Print icon នឹងលាក់។</span></li>
+          <li><span class="help-num">2</span><span>Company ត្រូវបានកំណត់ថេរ = <strong>AMFC</strong></span></li>
+          <li><span class="help-num">3</span><span>បញ្ចូលចំនួនទឹកប្រាក់ក្នុងតារាង។ សរុបនឹងគណនាស្វ័យប្រវត្តិ។</span></li>
+          <li><span class="help-num">4</span><span>ចុច «បន្ថែមថ្មី» ដើម្បីបន្ថែមមុខចំណាយថ្មី។</span></li>
+          <li><span class="help-num">5</span><span>Remaining = Total Expenses − Bank Money (ABA)</span></li>
+          <li><span class="help-num">6</span><span>Upload ហត្ថលេខា → អត្ថបទ «ឈ្មោះ / ហត្ថលេខា» នឹងលាក់។</span></li>
+          <li><span class="help-num">7</span><span>Menu (ឆ្វេង)៖ Search, New Doc, Input/Output/History (filter date), Save, Undo/Redo</span></li>
+          <li><span class="help-num">8</span><span>បាត៖ Preview · PDF A4 · Print A4 · Help (!)</span></li>
+          <li><span class="help-num">9</span><span>UI ដូចគ្នាគ្រប់ iOS version និង device size</span></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal primary" id="helpOk">យល់ព្រម</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Voucher Info -->
-  <div class="section-title">ព័ត៌មានទូទៅ (Voucher Info)</div>
-  <div class="ios-card">
-    <div class="form-grid">
-      <div class="field-group">
-        <label>ក្រុមហ៊ុន (Company)</label>
-        <input type="text" id="company" value="AMFC" />
+  <!-- History Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h3>History · ចំនួនឯកសារ</h3>
+        <button class="modal-close" id="historyClose">×</button>
       </div>
-      <div class="field-group">
-        <label>លេខប័ណ្ណ (Voucher)</label>
-        <input type="text" id="voucher" placeholder="VCH-001" />
+      <div class="modal-body" id="historyBody">
+        <p style="color:#64748b;font-size:13px;margin-bottom:12px">Docs saved per day (Count)</p>
+        <div id="historyList"></div>
       </div>
-      <div class="field-group">
-        <label>ថ្ងៃទី (Date)</label>
-        <input type="date" id="docDate" />
-      </div>
-      <div class="field-group">
-        <label>អត្រាប្តូរប្រាក់ (1$ ៛)</label>
-        <input type="number" id="exchangeRate" value="4000" inputmode="numeric" oninput="recalculate()" />
+      <div class="modal-footer">
+        <button class="btn-modal ghost" id="historyClear">Clear All</button>
+        <button class="btn-modal primary" id="historyOk">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- Expense Items -->
-  <div class="section-title">មុខចំណាយ (Expenses)</div>
-  <div id="expenseList"></div>
-  <button class="add-row-btn" onclick="addRow()">+ បន្ថែមជួរចំណាយ</button>
-
-  <!-- Totals & Balances -->
-  <div class="section-title">សរុបទឹកប្រាក់ (Summary)</div>
-  <div class="ios-card">
-    <div class="summary-row">
-      <label>លុយធនាគារ (ABA) (៛)</label>
-      <input type="number" id="abaAmount" value="0" inputmode="decimal" oninput="recalculate()" />
-    </div>
-    <div class="summary-row">
-      <label>សាច់ប្រាក់ (Cash) (៛)</label>
-      <input type="number" id="cashAmount" value="0" inputmode="decimal" oninput="recalculate()" />
-    </div>
-    <div class="summary-row">
-      <label>ចំណាយសរុប (Total)</label>
-      <span class="total-val" id="totalExpense">0 ៛</span>
-    </div>
-    <div class="summary-row">
-      <label>នៅសល់ (Remaining)</label>
-      <span class="rem-val" id="remainingBalance">0 ៛</span>
-    </div>
-  </div>
-
-  <!-- Touch Signatures -->
-  <div class="section-title">ហត្ថលេខា (Signatures)</div>
-  <div class="ios-card">
-    <div class="sig-box">
-      <div class="sig-header">
-        <label>អ្នកធ្វើបញ្ជី (Prepared By)</label>
-        <button class="delete-btn" onclick="clearCanvas('sigPrep')">លុបហត្ថលេខា</button>
-      </div>
-      <canvas id="sigPrep" class="sig-pad"></canvas>
-    </div>
-    <div class="sig-box" style="margin-bottom:0">
-      <div class="sig-header">
-        <label>អ្នកត្រួតពិនិត្យ / អនុម័ត (Approved By)</label>
-        <button class="delete-btn" onclick="clearCanvas('sigApp')">លុបហត្ថលេខា</button>
-      </div>
-      <canvas id="sigApp" class="sig-pad"></canvas>
-    </div>
-  </div>
-
-  <!-- Bottom Fixed iOS Action Bar -->
-  <div class="bottom-bar">
-    <button class="btn-secondary" onclick="saveDocument()">រក្សាទុក (Save)</button>
-    <button class="btn-secondary" onclick="openHistory()">ប្រវត្តិ (History)</button>
-    <button class="btn-primary" onclick="window.print()">Create PDF / Print</button>
-  </div>
-
-  <!-- History Modal Sheet -->
-  <div id="historyModal" class="modal-backdrop" onclick="closeHistory()">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div class="modal-top">
-        <h3 style="margin:0">ប្រវត្តិបញ្ជីចំណាយ (History)</h3>
-        <button class="chip-btn" onclick="closeHistory()">Close</button>
-      </div>
-      <div id="historyItems"></div>
-    </div>
-  </div>
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <script>
-    let rows = [];
-    const STORAGE_KEY = 'amfc_ios_expenses_v1';
+    // ===== Default rows =====
+    const DEFAULT_ITEMS = [
+      "ជ្រេរ",
+      "ចារ",
+      "មេក្រោម",
+      "មេគ្រើស",
+      "CPF បង់លុយ QR",
+      "កាត់ប័ណ្ណ",
+      "RED",
+      "ពន្ធ",
+      "CPF",
+      "ឯកសារតំបន់"
+    ];
 
-    function init() {
-      document.getElementById('docDate').valueAsDate = new Date();
-      setupCanvas('sigPrep');
-      setupCanvas('sigApp');
-      addRow();
+    let rows = DEFAULT_ITEMS.map((name, i) => ({ id: i + 1, desc: name, amount: 0 }));
+    let nextId = rows.length + 1;
+    let historyStack = [];
+    let redoStack = [];
+    let currentDate = new Date();
+
+    // ===== DOM =====
+    const expenseBody = document.getElementById('expenseBody');
+    const totalEl = document.getElementById('totalExpenses');
+    const bankEl = document.getElementById('bankMoney');
+    const remainEl = document.getElementById('remaining');
+    const dateDisplay = document.getElementById('dateDisplay');
+    const dateInput = document.getElementById('dateInput');
+    const dateEditBtn = document.getElementById('dateEditBtn');
+
+    // ===== Helpers =====
+    function formatDate(d) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${day}/${months[d.getMonth()]}/${d.getFullYear()}`;
     }
 
-    function addRow(data = { category: '', desc: '', currency: 'KHR', amount: '' }) {
-      rows.push(data);
-      renderRows();
+    function parseAmount(v) {
+      const n = parseFloat(String(v).replace(/,/g, '').replace(/៛/g, '').trim());
+      return isNaN(n) ? 0 : n;
     }
 
-    function removeRow(index) {
-      rows.splice(index, 1);
-      if (rows.length === 0) addRow();
-      else renderRows();
+    // Format: 1,234,567៛   |  when 0 → just "0" (no ៛)
+    function formatMoney(n) {
+      const num = parseAmount(n);
+      if (num === 0) return '0';
+      return num.toLocaleString('en-US', { maximumFractionDigits: 0 }) + '៛';
     }
 
-    function renderRows() {
-      const container = document.getElementById('expenseList');
-      container.innerHTML = '';
-      rows.forEach((row, idx) => {
-        const card = document.createElement('div');
-        card.className = 'expense-item';
-        card.innerHTML = `
-          <div class="expense-item-header">
-            <span class="row-badge">ល.រ #${idx + 1}</span>
-            <button class="delete-btn" onclick="removeRow(${idx})">លុប</button>
-          </div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>ប្រភេទ (Category)</label>
-              <input type="text" value="${row.category}" placeholder="ឧ. សាំង, អាហារ..." onchange="updateRow(${idx}, 'category', this.value)" />
+    function formatNum(n) {
+      return formatMoney(n);
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._tid);
+      t._tid = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function pushHistory() {
+      historyStack.push(JSON.stringify({ rows, bank: bankEl.value, date: currentDate.toISOString() }));
+      if (historyStack.length > 40) historyStack.shift();
+      redoStack = [];
+    }
+
+    // ===== Render table =====
+    function renderTable() {
+      expenseBody.innerHTML = '';
+      rows.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = r.id;
+        const amt = parseAmount(r.amount);
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><input class="desc-input" type="text" value="${escapeHtml(r.desc)}" data-field="desc" /></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">
+              <div class="amt-cell" data-id="${r.id}">
+                <span class="amt-display" tabindex="0">${formatMoney(amt)}</span>
+                <input class="amt-input" type="number" value="${amt}" min="0" step="1" inputmode="decimal" data-field="amount" />
+              </div>
+              <button class="btn-row del" title="Delete" data-del="${r.id}">×</button>
             </div>
-            <div class="field-group">
-              <label>រូបិយប័ណ្ណ</label>
-              <select onchange="updateRow(${idx}, 'currency', this.value)">
-                <option value="KHR" ${row.currency === 'KHR' ? 'selected' : ''}>រៀល (៛)</option>
-                <option value="USD" ${row.currency === 'USD' ? 'selected' : ''}>ដុល្លារ ($)</option>
-              </select>
-            </div>
-            <div class="field-group full">
-              <label>បរិយាយ (មុខចំណាយ)</label>
-              <input type="text" value="${row.desc}" placeholder="បញ្ចូលការបរិយាយ..." onchange="updateRow(${idx}, 'desc', this.value)" />
-            </div>
-            <div class="field-group">
-              <label>ចំនួនទឹកប្រាក់</label>
-              <input type="number" inputmode="decimal" value="${row.amount}" placeholder="0" oninput="updateRow(${idx}, 'amount', this.value)" />
-            </div>
-            <div class="field-group">
-              <label>សមមូល (៛)</label>
-              <div class="equiv-display" id="eq-${idx}">0 ៛</div>
-            </div>
-          </div>
+          </td>
         `;
-        container.appendChild(card);
+        expenseBody.appendChild(tr);
       });
-      recalculate();
+      recalc();
     }
 
-    function updateRow(idx, key, val) {
-      rows[idx][key] = val;
-      recalculate();
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    function recalculate() {
-      const rate = parseFloat(document.getElementById('exchangeRate').value) || 4000;
-      let totalKHR = 0;
+    function recalc() {
+      let total = 0;
+      rows.forEach(r => total += parseAmount(r.amount));
+      const bank = parseAmount(bankEl.value);
+      // Per requirement: Remaining = Total Expenses − Bank Money
+      const remain = total - bank;
 
-      rows.forEach((row, idx) => {
-        const amt = parseFloat(row.amount) || 0;
-        const eq = row.currency === 'USD' ? amt * rate : amt;
-        totalKHR += eq;
-        const eqEl = document.getElementById(`eq-${idx}`);
-        if (eqEl) eqEl.textContent = eq.toLocaleString() + ' ៛';
+      totalEl.textContent = formatMoney(total);
+      remainEl.textContent = formatMoney(remain);
+      remainEl.classList.toggle('positive', remain >= 0);
+      remainEl.classList.toggle('negative', remain < 0);
+
+      // Bank currency ៛ only when value ≠ 0
+      const bankCur = document.getElementById('bankCurrency');
+      if (bankCur) { bankCur.textContent = bank === 0 ? '' : '៛'; bankCur.parentElement.classList.toggle('has-currency', bank !== 0); }
+    }
+
+    // ===== Events =====
+    // Click / focus display → enter edit mode
+    expenseBody.addEventListener('click', e => {
+      const display = e.target.closest('.amt-display');
+      if (display) {
+        const cell = display.closest('.amt-cell');
+        if (cell) {
+          cell.classList.add('editing');
+          const input = cell.querySelector('.amt-input');
+          input.focus();
+          input.select();
+        }
+        return;
+      }
+      if (e.target.matches('[data-del]')) {
+        const id = +e.target.dataset.del;
+        pushHistory();
+        rows = rows.filter(r => r.id !== id);
+        renderTable();
+        toast('លុបមុខចំណាយរួច');
+      }
+    });
+
+    expenseBody.addEventListener('keydown', e => {
+      if (e.target.classList.contains('amt-display') && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        e.target.click();
+      }
+    });
+
+    expenseBody.addEventListener('input', e => {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+      const id = +tr.dataset.id;
+      const row = rows.find(r => r.id === id);
+      if (!row) return;
+      if (e.target.dataset.field === 'desc') row.desc = e.target.value;
+      if (e.target.dataset.field === 'amount') {
+        row.amount = parseAmount(e.target.value);
+        recalc();
+      }
+    });
+
+    expenseBody.addEventListener('focusout', e => {
+      if (e.target.classList.contains('amt-input')) {
+        const cell = e.target.closest('.amt-cell');
+        if (cell) {
+          const id = +cell.dataset.id;
+          const row = rows.find(r => r.id === id);
+          if (row) {
+            row.amount = parseAmount(e.target.value);
+            e.target.value = row.amount;
+            const display = cell.querySelector('.amt-display');
+            if (display) display.textContent = formatMoney(row.amount);
+          }
+          cell.classList.remove('editing');
+          pushHistory();
+          recalc();
+        }
+      }
+    });
+
+    expenseBody.addEventListener('keydown', e => {
+      if (e.target.classList.contains('amt-input') && e.key === 'Enter') {
+        e.target.blur();
+      }
+    });
+
+    expenseBody.addEventListener('change', e => {
+      if (e.target.classList.contains('desc-input')) pushHistory();
+    });
+
+    document.getElementById('btnAddRow').addEventListener('click', () => {
+      pushHistory();
+      rows.push({ id: nextId++, desc: '', amount: 0 });
+      renderTable();
+      // focus new description
+      const last = expenseBody.querySelector('tr:last-child .desc-input');
+      if (last) last.focus();
+    });
+
+    bankEl.addEventListener('input', () => {
+      recalc();
+    });
+    bankEl.addEventListener('change', () => {
+      pushHistory();
+      recalc();
+    });
+    bankEl.addEventListener('blur', () => {
+      bankEl.value = parseAmount(bankEl.value);
+      recalc();
+    });
+
+    // Date
+    dateDisplay.textContent = formatDate(currentDate);
+    dateInput.valueAsDate = currentDate;
+
+    dateEditBtn.addEventListener('click', () => {
+      dateDisplay.style.display = 'none';
+      dateInput.style.display = 'inline-block';
+      dateInput.focus();
+      dateInput.showPicker && dateInput.showPicker();
+    });
+
+    dateInput.addEventListener('change', () => {
+      if (dateInput.value) {
+        currentDate = new Date(dateInput.value + 'T12:00:00');
+        dateDisplay.textContent = formatDate(currentDate);
+      }
+      dateDisplay.style.display = '';
+      dateInput.style.display = 'none';
+      pushHistory();
+    });
+
+    dateInput.addEventListener('blur', () => {
+      dateDisplay.style.display = '';
+      dateInput.style.display = 'none';
+    });
+
+    // Signatures
+    function setupSign(fileId, imgId, placeId, statusId, clearId) {
+      const file = document.getElementById(fileId);
+      const img = document.getElementById(imgId);
+      const place = document.getElementById(placeId);
+      const status = document.getElementById(statusId);
+      const clearBtn = document.getElementById(clearId);
+
+      file.addEventListener('change', () => {
+        const f = file.files[0];
+        if (!f) return;
+        if (!f.type.startsWith('image/')) {
+          toast('សូមជ្រើសរើសរូបភាព');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = ev => {
+          img.src = ev.target.result;
+          img.style.display = 'inline-block';
+          place.style.display = 'none';
+          status.textContent = f.name.length > 18 ? f.name.slice(0, 16) + '…' : f.name;
+          clearBtn.style.display = 'flex';
+          toast('Upload ហត្ថលេខារួច');
+        };
+        reader.readAsDataURL(f);
       });
 
-      const aba = parseFloat(document.getElementById('abaAmount').value) || 0;
-      const cash = parseFloat(document.getElementById('cashAmount').value) || 0;
-      const remaining = (aba + cash) - totalKHR;
+      clearBtn.addEventListener('click', () => {
+        file.value = '';
+        img.src = '';
+        img.style.display = 'none';
+        place.style.display = '';
+        status.textContent = 'no file selected';
+        clearBtn.style.display = 'none';
+      });
+    }
+    setupSign('signFile1', 'signImg1', 'signPlace1', 'signStatus1', 'clearSign1');
+    setupSign('signFile2', 'signImg2', 'signPlace2', 'signStatus2', 'clearSign2');
 
-      document.getElementById('totalExpense').textContent = totalKHR.toLocaleString() + ' ៛';
-      const remEl = document.getElementById('remainingBalance');
-      remEl.textContent = remaining.toLocaleString() + ' ៛';
-      remEl.style.color = remaining < 0 ? 'var(--ios-red)' : 'var(--ios-green)';
+    // Drawer
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('drawerOverlay');
+    function openDrawer() { drawer.classList.add('open'); overlay.classList.add('open'); }
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+    document.getElementById('navToggle').addEventListener('click', openDrawer);
+    document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.drawer-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const act = btn.dataset.action;
+        closeDrawer();
+        if (act === 'new') {
+          if (confirm('បង្កើតឯកសារថ្មី? ទិន្នន័យបច្ចុប្បន្ននឹងត្រូវលុប។')) {
+            rows = DEFAULT_ITEMS.map((name, i) => ({ id: i + 1, desc: name, amount: 0 }));
+            nextId = rows.length + 1;
+            bankEl.value = 0;
+            currentDate = new Date();
+            dateDisplay.textContent = formatDate(currentDate);
+            dateInput.valueAsDate = currentDate;
+            // clear signs
+            ['1','2'].forEach(n => {
+              document.getElementById('signFile'+n).value = '';
+              document.getElementById('signImg'+n).style.display = 'none';
+              document.getElementById('signPlace'+n).style.display = '';
+              document.getElementById('signStatus'+n).textContent = 'no file selected';
+              document.getElementById('clearSign'+n).style.display = 'none';
+            });
+            historyStack = []; redoStack = [];
+            renderTable();
+            toast('ឯកសារថ្មី');
+          }
+        } else if (act === 'save') {
+          document.getElementById('btnSave').click();
+        } else if (act === 'history') {
+          openHistory();
+        } else {
+          toast(act.charAt(0).toUpperCase() + act.slice(1) + ' (demo)');
+        }
+      });
+    });
+
+    // Undo / Redo
+    document.getElementById('btnUndo').addEventListener('click', () => {
+      if (!historyStack.length) { toast('គ្មាន Undo'); return; }
+      redoStack.push(JSON.stringify({ rows, bank: bankEl.value, date: currentDate.toISOString() }));
+      const prev = JSON.parse(historyStack.pop());
+      rows = prev.rows;
+      bankEl.value = prev.bank;
+      currentDate = new Date(prev.date);
+      dateDisplay.textContent = formatDate(currentDate);
+      dateInput.valueAsDate = currentDate;
+      nextId = Math.max(...rows.map(r => r.id), 0) + 1;
+      renderTable();
+      toast('Undo');
+    });
+
+    document.getElementById('btnRedo').addEventListener('click', () => {
+      if (!redoStack.length) { toast('គ្មាន Redo'); return; }
+      historyStack.push(JSON.stringify({ rows, bank: bankEl.value, date: currentDate.toISOString() }));
+      const next = JSON.parse(redoStack.pop());
+      rows = next.rows;
+      bankEl.value = next.bank;
+      currentDate = new Date(next.date);
+      dateDisplay.textContent = formatDate(currentDate);
+      dateInput.valueAsDate = currentDate;
+      nextId = Math.max(...rows.map(r => r.id), 0) + 1;
+      renderTable();
+      toast('Redo');
+    });
+
+    // ===== Save (with per-day count) =====
+    function getDayKey(d) {
+      return formatDate(d).replace(/\//g, '-'); // e.g. 16-Nov-2026
     }
 
-    function setupCanvas(id) {
-      const canvas = document.getElementById(id);
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = (rect.width || 320) * dpr;
-      canvas.height = 130 * dpr;
-      ctx.scale(dpr, dpr);
-      ctx.lineWidth = 2.2;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#1C1C1E';
-
-      let drawing = false;
-      const getPos = (e) => {
-        const r = canvas.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        return { x: touch.clientX - r.left, y: touch.clientY - r.top };
-      };
-
-      const start = (e) => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
-      const move = (e) => { if (!drawing) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
-      const end = () => { drawing = false; };
-
-      canvas.addEventListener('touchstart', start, { passive: false });
-      canvas.addEventListener('touchmove', move, { passive: false });
-      canvas.addEventListener('touchend', end);
-      canvas.addEventListener('mousedown', start);
-      canvas.addEventListener('mousemove', move);
-      canvas.addEventListener('mouseup', end);
-    }
-
-    function clearCanvas(id) {
-      const canvas = document.getElementById(id);
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function showSavedToast() {
-      const pill = document.getElementById('saveStatus');
-      pill.classList.add('show');
-      setTimeout(() => pill.classList.remove('show'), 2200);
-    }
-
-    function getDocData() {
-      return {
+    document.getElementById('btnSave').addEventListener('click', () => {
+      const dayKey = getDayKey(currentDate);
+      const data = {
         id: Date.now(),
-        company: document.getElementById('company').value,
-        voucher: document.getElementById('voucher').value || 'No-Voucher',
-        date: document.getElementById('docDate').value,
-        rate: document.getElementById('exchangeRate').value,
-        aba: document.getElementById('abaAmount').value,
-        cash: document.getElementById('cashAmount').value,
-        total: document.getElementById('totalExpense').textContent,
-        rows: rows
+        date: formatDate(currentDate),
+        company: 'AMFC',
+        rows: JSON.parse(JSON.stringify(rows)),
+        bank: parseAmount(bankEl.value),
+        total: rows.reduce((s, r) => s + parseAmount(r.amount), 0),
+        savedAt: new Date().toISOString()
       };
-    }
+      try {
+        // Store individual doc
+        const docKey = 'amfc_doc_' + data.id;
+        localStorage.setItem(docKey, JSON.stringify(data));
 
-    function saveDocument() {
-      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      history.unshift(getDocData());
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-      showSavedToast();
-    }
+        // Maintain per-day list of doc ids
+        const dayListKey = 'amfc_day_' + dayKey;
+        let dayList = [];
+        try { dayList = JSON.parse(localStorage.getItem(dayListKey) || '[]'); } catch (_) {}
+        dayList.push(data.id);
+        localStorage.setItem(dayListKey, JSON.stringify(dayList));
 
-    function resetForm() {
-      document.getElementById('voucher').value = '';
-      document.getElementById('abaAmount').value = '0';
-      document.getElementById('cashAmount').value = '0';
-      clearCanvas('sigPrep');
-      clearCanvas('sigApp');
-      rows = [];
-      addRow();
-    }
+        localStorage.setItem('amfc_expense_last', docKey);
+        const count = dayList.length;
+        toast('រក្សាទុករួច ✓  (' + count + ' នៅថ្ងៃនេះ)');
+      } catch (e) {
+        toast('Save មិនបាន (storage)');
+      }
+    });
 
+    // ===== History with Count per day =====
     function openHistory() {
-      const list = document.getElementById('historyItems');
-      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      list.innerHTML = history.length ? '' : '<p style="color:#8E8E93">មិនទាន់មានប្រវត្តិរក្សាទុកទេ។</p>';
-      history.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'history-card';
-        div.innerHTML = `
-          <div>
-            <strong>${item.voucher}</strong> (${item.date || 'N/A'})<br/>
-            <span style="font-size:13px;color:#007AFF">${item.total}</span>
-          </div>
-          <button class="chip-btn" onclick="loadDoc(${idx})">បើក (Load)</button>
-        `;
-        list.appendChild(div);
+      const listEl = document.getElementById('historyList');
+      listEl.innerHTML = '';
+
+      // Collect all day keys
+      const dayKeys = Object.keys(localStorage)
+        .filter(k => k.startsWith('amfc_day_'))
+        .sort()
+        .reverse();
+
+      if (!dayKeys.length) {
+        listEl.innerHTML = '<div class="hist-empty">មិនមាន History</div>';
+      } else {
+        dayKeys.forEach(dk => {
+          let ids = [];
+          try { ids = JSON.parse(localStorage.getItem(dk) || '[]'); } catch (_) {}
+          const count = ids.length;
+          if (count === 0) return;
+          const dateLabel = dk.replace('amfc_day_', '').replace(/-/g, '/');
+          const item = document.createElement('div');
+          item.className = 'hist-item';
+          item.innerHTML = `
+            <div>
+              <div class="hist-date">${dateLabel}</div>
+              <div class="hist-meta">${count} document${count > 1 ? 's' : ''}</div>
+            </div>
+            <span class="hist-count">${count}</span>
+          `;
+          item.addEventListener('click', () => {
+            // Load latest doc of that day
+            const lastId = ids[ids.length - 1];
+            const raw = localStorage.getItem('amfc_doc_' + lastId);
+            if (raw) {
+              try {
+                const data = JSON.parse(raw);
+                rows = data.rows || rows;
+                bankEl.value = data.bank || 0;
+                // parse date back
+                const parts = (data.date || '').split('/');
+                if (parts.length === 3) {
+                  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+                  currentDate = new Date(+parts[2], months[parts[1]] || 0, +parts[0]);
+                  dateDisplay.textContent = formatDate(currentDate);
+                  dateInput.valueAsDate = currentDate;
+                }
+                nextId = Math.max(...rows.map(r => r.id), 0) + 1;
+                renderTable();
+                toast('Loaded ' + data.date + ' (#' + count + ')');
+                document.getElementById('historyModal').classList.remove('show');
+              } catch (_) { toast('Load error'); }
+            }
+          });
+          listEl.appendChild(item);
+        });
+      }
+      document.getElementById('historyModal').classList.add('show');
+    }
+
+    document.getElementById('btnHistory').addEventListener('click', openHistory);
+
+    document.getElementById('historyClose').addEventListener('click', () => {
+      document.getElementById('historyModal').classList.remove('show');
+    });
+    document.getElementById('historyOk').addEventListener('click', () => {
+      document.getElementById('historyModal').classList.remove('show');
+    });
+    document.getElementById('historyClear').addEventListener('click', () => {
+      if (!confirm('លុប History ទាំងអស់?')) return;
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('amfc_day_') || k.startsWith('amfc_doc_') || k === 'amfc_expense_last') {
+          localStorage.removeItem(k);
+        }
       });
-      document.getElementById('historyModal').classList.add('open');
-    }
+      document.getElementById('historyList').innerHTML = '<div class="hist-empty">មិនមាន History</div>';
+      toast('History cleared');
+    });
+    document.getElementById('historyModal').addEventListener('click', e => {
+      if (e.target.id === 'historyModal') e.target.classList.remove('show');
+    });
 
-    function closeHistory() {
-      document.getElementById('historyModal').classList.remove('open');
-    }
-
-    function loadDoc(idx) {
-      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      const item = history[idx];
-      if (!item) return;
-      document.getElementById('company').value = item.company;
-      document.getElementById('voucher').value = item.voucher;
-      document.getElementById('docDate').value = item.date;
-      document.getElementById('exchangeRate').value = item.rate;
-      document.getElementById('abaAmount').value = item.aba;
-      document.getElementById('cashAmount').value = item.cash;
-      rows = item.rows || [];
-      renderRows();
-      closeHistory();
-    }
-
-    function exportCSV() {
-      let csv = 'No,Category,Description,Currency,Amount\n';
-      rows.forEach((r, i) => {
-        csv += `${i + 1},"${r.category}","${r.desc}",${r.currency},${r.amount || 0}\n`;
-      });
-      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `AMFC_Expense_${document.getElementById('docDate').value || 'export'}.csv`;
-      a.click();
-    }
-
-    function backupJSON() {
-      const data = localStorage.getItem(STORAGE_KEY) || '[]';
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'AMFC_Expense_Backup.json';
-      a.click();
-    }
-
-    function importJSON(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        localStorage.setItem(STORAGE_KEY, ev.target.result);
-        showSavedToast();
+    // ===== Preview / Print / PDF =====
+    document.getElementById('btnPreview').addEventListener('click', () => {
+      const previousOutput = document.body.dataset.output || 'mobile';
+      // Output actions use Output 1. Monochrome is the default; a manually
+      // saved "By Theme" choice remains active until the user changes it.
+      document.body.dataset.output = 'formal';
+      document.body.classList.add('preview-mode');
+      const exit = document.createElement('button');
+      exit.className = 'preview-exit';
+      exit.textContent = 'Exit Preview';
+      exit.onclick = () => {
+        document.body.classList.remove('preview-mode');
+        document.body.dataset.output = previousOutput;
+        exit.remove();
       };
-      reader.readAsText(file);
+      document.body.appendChild(exit);
+      toast('A4 preview');
+    });
+
+    // Output selector: mobile data-entry vs formal A4 document layout.
+    const outputModeSelect = document.getElementById('outputMode');
+    function applyOutputMode(mode) {
+      const selected = mode === 'formal' ? 'formal' : 'mobile';
+      document.body.dataset.output = selected;
+      if (outputModeSelect) outputModeSelect.value = selected;
+      try { localStorage.setItem('amfc_expense_output', selected); } catch (_) {}
+    }
+    let savedOutput = 'mobile';
+    try { savedOutput = localStorage.getItem('amfc_expense_output') || 'mobile'; } catch (_) {}
+    applyOutputMode(savedOutput);
+    outputModeSelect.addEventListener('change', () => applyOutputMode(outputModeSelect.value));
+
+    // Output 1 color treatment is independent from the app's selected theme.
+    const formalStyleSelect = document.getElementById('formalStyle');
+    function applyFormalStyle(style) {
+      const selected = style === 'theme' ? 'theme' : 'monochrome';
+      document.body.dataset.formalStyle = selected;
+      if (formalStyleSelect) formalStyleSelect.value = selected;
+      try { localStorage.setItem('amfc_expense_formal_style', selected); } catch (_) {}
+    }
+    let savedFormalStyle = 'monochrome';
+    try { savedFormalStyle = localStorage.getItem('amfc_expense_formal_style') || 'monochrome'; } catch (_) {}
+    applyFormalStyle(savedFormalStyle);
+    formalStyleSelect.addEventListener('change', () => applyFormalStyle(formalStyleSelect.value));
+
+    function clearPreviewMode() {
+      document.body.classList.remove('preview-mode');
+      const exit = document.querySelector('.preview-exit');
+      if (exit) exit.remove();
     }
 
-    window.addEventListener('DOMContentLoaded', init);
+    function fitFormalReportToOnePage(main) {
+      // The page content is scaled visually, while a compensating negative
+      // margin removes the unused layout height so the browser creates one page.
+      document.body.classList.add('a4-one-page-fit');
+      main.style.setProperty('--a4-fit-scale', '1');
+      main.style.setProperty('--a4-negative-space', '0px');
+      main.style.setProperty('width', '194mm', 'important');
+      main.style.setProperty('max-width', 'none', 'important');
+      main.style.setProperty('padding', '0', 'important');
+      main.style.setProperty('transform', 'scale(1)', 'important');
+      main.style.setProperty('transform-origin', 'top center', 'important');
+      main.style.setProperty('margin', '0 auto', 'important');
+      main.getBoundingClientRect();
+
+      const availableHeight = (281 / 25.4) * 96;
+      let scale = 1;
+      let naturalHeight = main.scrollHeight;
+
+      // Re-measure after width compensation; this keeps the visible page width
+      // at 194 mm while reducing text/row height proportionally.
+      for (let i = 0; i < 4; i++) {
+        main.style.setProperty('--a4-fit-scale', String(scale));
+        main.style.setProperty('width', `calc(194mm / ${scale})`, 'important');
+        main.style.setProperty('transform', `scale(${scale})`, 'important');
+        main.getBoundingClientRect();
+        naturalHeight = Math.max(main.scrollHeight, main.offsetHeight);
+        const nextScale = Math.min(1, availableHeight / Math.max(1, naturalHeight));
+        if (Math.abs(nextScale - scale) < 0.003) break;
+        scale = nextScale;
+      }
+
+      main.style.setProperty('--a4-fit-scale', String(scale));
+      main.style.setProperty('width', `calc(194mm / ${scale})`, 'important');
+      main.style.setProperty('transform', `scale(${scale})`, 'important');
+      main.style.setProperty('--a4-negative-space', `${-naturalHeight * (1 - scale)}px`);
+      main.getBoundingClientRect();
+      return scale;
+    }
+
+    function clearA4Fit(main) {
+      document.body.classList.remove('a4-one-page-fit');
+      if (!main) return;
+      [
+        '--a4-fit-scale','--a4-negative-space'
+      ].forEach(name => main.style.removeProperty(name));
+      ['width','max-width','padding','transform','transform-origin','margin','margin-bottom']
+        .forEach(name => main.style.removeProperty(name));
+    }
+
+    function openNativePrint() {
+      clearPreviewMode();
+      const main = document.getElementById('mainContent');
+      const previousOutput = document.body.dataset.output;
+      document.body.dataset.output = 'formal';
+      document.body.classList.add('pdf-export-mode');
+      const scale = fitFormalReportToOnePage(main);
+      if (scale < 0.55) toast('Many expense rows detected; report is being fitted to one page.');
+      let cleaned = false;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        clearA4Fit(main);
+        document.body.classList.remove('pdf-export-mode');
+        document.body.dataset.output = previousOutput || 'mobile';
+        window.removeEventListener('afterprint', cleanup);
+      };
+      window.addEventListener('afterprint', cleanup);
+      window.print();
+      // Some mobile browsers do not consistently dispatch afterprint.
+      setTimeout(cleanup, 1500);
+    }
+    document.getElementById('btnPrint').addEventListener('click', openNativePrint);
+
+    function loadPdfGenerator() {
+      if (typeof window.html2pdf === 'function') return Promise.resolve(true);
+      return new Promise(resolve => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.async = true;
+        script.onload = () => resolve(typeof window.html2pdf === 'function');
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+      });
+    }
+    document.getElementById('btnPdf').addEventListener('click', async () => {
+      clearPreviewMode();
+      const main = document.getElementById('mainContent');
+      const fileDate = formatDate(currentDate).replace(/\//g, '-');
+      const filename = 'AMFC_Expense_Report_' + fileDate + '.pdf';
+      const ready = await loadPdfGenerator();
+      if (!ready) {
+        toast('PDF library unavailable. Opening A4 print sheet; choose Save to Files.');
+        openNativePrint();
+        return;
+      }
+
+      const previousOutput = document.body.dataset.output;
+      document.body.dataset.output = 'formal';
+      document.body.classList.add('pdf-export-mode');
+      const scale = fitFormalReportToOnePage(main);
+      toast(scale < 0.55 ? 'Fitting detailed report to one A4 page…' : 'Creating one-page A4 PDF…');
+
+      try {
+        const options = {
+          margin:[8,8,8,8],
+          filename,
+          image:{type:'jpeg',quality:0.98},
+          html2canvas:{
+            scale:2,
+            useCORS:true,
+            backgroundColor:'#ffffff',
+            scrollY:0
+          },
+          jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+          pagebreak:{mode:[]}
+        };
+        await window.html2pdf().set(options).from(main).save();
+        toast('One-page A4 PDF created. Check Downloads or Files.');
+      } catch (error) {
+        toast('Direct PDF failed. Opening A4 print sheet instead.');
+        openNativePrint();
+      } finally {
+        clearA4Fit(main);
+        document.body.classList.remove('pdf-export-mode');
+        document.body.dataset.output = previousOutput || 'mobile';
+      }
+    });
+
+    // Help
+    const helpModal = document.getElementById('helpModal');
+    document.getElementById('btnHelp').addEventListener('click', () => helpModal.classList.add('show'));
+    document.getElementById('helpClose').addEventListener('click', () => helpModal.classList.remove('show'));
+    document.getElementById('helpOk').addEventListener('click', () => helpModal.classList.remove('show'));
+    helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
+
+
+    // ===== Theme selector (saved locally on this device) =====
+    const themeSelect = document.getElementById('themeSelect');
+    function applyTheme(theme) {
+      const allowed = ['default','aba','corporate','midnight','amfc'];
+      const selected = allowed.includes(theme) ? theme : 'default';
+      document.body.dataset.theme = selected;
+      if (themeSelect) themeSelect.value = selected;
+      try { localStorage.setItem('amfc_expense_theme', selected); } catch (_) {}
+    }
+    let savedTheme = 'default';
+    try { savedTheme = localStorage.getItem('amfc_expense_theme') || 'default'; } catch (_) {}
+    applyTheme(savedTheme);
+    themeSelect.addEventListener('change', () => applyTheme(themeSelect.value));
+
+    // Init
+    renderTable();
+    pushHistory(); // initial state
   </script>
 </body>
 </html>
